@@ -1,10 +1,12 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Navbar from "../Header";
+import Calendar from 'react-calendar';
 
 function VenueDetails() {
   const { id } = useParams();
   const [venue, setVenue] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date()); // State to store selected date
 
   useEffect(() => {
     fetch(`https://v2.api.noroff.dev/holidaze/venues/${id}`)
@@ -16,6 +18,11 @@ function VenueDetails() {
         console.error("Error fetching venue:", error);
       });
   }, [id]);
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    // Do whatever you need with the selected date
+  };
 
   if (!venue) {
     return <div>Loading...</div>;
@@ -47,6 +54,9 @@ function VenueDetails() {
               />
             </svg>
           ))}
+        </div>
+        <div>
+          <Calendar value={selectedDate} onChange={handleDateChange} />
         </div>
       </div>
     </div>
