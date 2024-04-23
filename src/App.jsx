@@ -16,7 +16,7 @@ function App() {
         <Route index element={<HomePage />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/contact" element={<ContactPage />} />   
-        <Route path="/specific" element={<VenueDetails />} />     
+        <Route path="/venues/:id" element={<VenueDetails />} />
       </Routes>
     </Router>
   )
