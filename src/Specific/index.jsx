@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import Navbar from "../Header";
 
 function VenueDetails() {
   const { id } = useParams();
@@ -22,6 +23,7 @@ function VenueDetails() {
 
   return (
     <div className="flex flex-col items-center">
+      <Navbar />
       <h2 className="text-2xl font-bold mb-4 text-center">{venue.title}</h2>
       <div className="max-w-xl">
         <img src={venue.media[0].url} alt={venue.title} className="w-full h-auto mb-4" />
