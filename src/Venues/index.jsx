@@ -57,73 +57,71 @@ function Venues() {
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <h2 className="text-2xl font-bold mb-4 text-center">Our Venues:</h2>
+    <div className="container mx-auto px-4">
+      <h3 className="text-4xl font-bold mb-8 text-center">Our Venues</h3>
       {/* Search bar */}
       <input
         type="text"
         placeholder="Search venues..."
         value={searchTerm}
         onChange={handleChange}
-        className="mb-4 px-4 py-2 border border-gray-300 rounded-md"
+        className="w-full mb-8 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
       />
-      {error && <p>{error}</p>}
-      <div className="flex justify-center">
-        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {filteredVenues.map((venue) => (
-            <li key={venue.id} className="flex flex-col">
-              <Link to={`/venues/${venue.id}`} className="no-underline">
-                <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-                  {venue.media && venue.media[0] && (
-                    <img
-                      src={venue.media[0].url}
-                      alt={venue.title}
-                      className="w-full h-48 object-cover"
-                    />
-                  )}
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold mb-2 text-black">
-                      {venue.title}
-                    </h3>
-                    <p className="text-sm mb-4 text-black">
-                      {venue.description}
-                    </p>
-                    <div className="flex justify-between items-center mb-2">
-                      <p className="text-sm font-semibold text-black">
-                        Price: £{venue.price}
-                      </p>
-                    </div>
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill={
-                            i < venue.rating
-                              ? "currentColor"
-                              : "none"
-                          }
-                          className={`w-4 h-4 ${
-                            i < venue.rating
-                              ? "text-yellow-500"
-                              : "text-gray-300"
-                          }`}
-                          key={i}
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 1.638l1.482 4.537h4.796l-3.878 2.821 1.482 4.538-3.879-2.823-3.878 2.823 1.482-4.538-3.878-2.82h4.795z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      ))}
-                    </div>
+      {error && <p className="text-red-500">{error}</p>}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {filteredVenues.map((venue) => (
+          <Link
+            key={venue.id}
+            to={`/venues/${venue.id}`}
+            className="rounded-lg overflow-hidden transition duration-300 transform hover:shadow-glow hover:scale-105"
+          >
+            <div className="bg-blue-100 p-6 shadow-lg">
+              {venue.media && venue.media[0] && (
+                <img
+                  src={venue.media[0].url}
+                  alt={venue.title}
+                  className="w-full h-48 object-cover"
+                />
+              )}
+              <div>
+                <h4 className="text-2xl font-semibold mb-2 text-white">
+                  {venue.title}
+                </h4>
+                <p className="text-white">{venue.description}</p>
+                <div className="flex justify-between items-center mt-4">
+                  <p className="text-xl font-semibold text-white">
+                    Price: £{venue.price}
+                  </p>
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <svg
+                        key={i}
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill={
+                          i < venue.rating
+                            ? "#FFD700"
+                            : "none"
+                        }
+                        className={`w-6 h-6 ${
+                          i < venue.rating
+                            ? "text-yellow-500"
+                            : "text-gray-300"
+                        }`}
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 1.638l1.482 4.537h4.796l-3.878 2.821 1.482 4.538-3.879-2.823-3.878 2.823 1.482-4.538-3.878-2.82h4.795z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ))}
                   </div>
                 </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
+              </div>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );

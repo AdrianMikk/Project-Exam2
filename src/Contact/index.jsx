@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Navbar from "../Header/index.jsx";
 import { Helmet } from "react-helmet";
 import * as Yup from 'yup';
 
@@ -41,7 +40,6 @@ function ContactForm() {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <Navbar />
       <Helmet>
         <title>Contact Us | Holidaze</title>
       </Helmet>

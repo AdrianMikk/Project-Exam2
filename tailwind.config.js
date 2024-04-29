@@ -16,7 +16,24 @@ export default {
             grey: "#515052",
             darkgrey: "#333138",
         },
-        extend: {},
+        extend: {
+            animation: {
+                glow: "glow 1s infinite alternate",
+            },
+            keyframes: {
+                glow: {
+                    "0%": {
+                        boxShadow: "0 0 0 0px rgba(0, 0, 255, 0.7)",
+                    },
+                    "100%": {
+                        boxShadow: "0 0 0 10px rgba(0, 0, 255, 0)",
+                    },
+                },
+            },
+            boxShadow: {
+                glow: "0 0 20px 5px rgba(255, 255, 250, 0.3)",
+            },
+        },
     },
     plugins: [],
 };

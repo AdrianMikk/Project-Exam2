@@ -1,11 +1,9 @@
 import Footer from '../Footer/index.jsx';
-import Navbar from '../Header/index.jsx';
 import Venues from '../Venues/index.jsx';
 
 const HomePage = () => {
   return (
     <div>
-      <Navbar />
       <div className="bg-gray-100 min-h-screen pt-8">
         <div className="container mx-auto py-8  ">
           <h1 className="text-4xl font-bold text-center mb-8">Holidaze</h1>

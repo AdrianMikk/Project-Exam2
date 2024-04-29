@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Navbar from "../Header";
 
 const Profile = () => {
   const [avatarUrl, setAvatarUrl] = useState(
@@ -13,7 +12,6 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
-      <Navbar />
       <div className="max-w-md w-full shadow-md rounded-lg overflow-hidden">
         <div className="px-6 py-4 flex flex-col items-center"> 
           <img
