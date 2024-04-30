@@ -3,10 +3,6 @@ import { useState } from 'react';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleLogout = () => {
-    window.location.href = '/login';
-  };
-
   return (
     <header className="bg-blue-500 shadow-lg">
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
@@ -17,7 +13,7 @@ const Navbar = () => {
             className="text-white focus:outline-none"
           >
             <svg
-              className="w-6 h-6"
+              className={`w-6 h-6 transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -35,7 +31,7 @@ const Navbar = () => {
         <nav className={`md:flex md:items-center md:w-auto ${isOpen ? 'block' : 'hidden'}`}>
           <div className="flex flex-col md:flex-row md:space-x-4">
             <a
-              href="/HomePage"
+              href="/venues"
               className="block mt-4 md:inline-block text-white hover:text-gray-100 transition duration-300"
             >
               Home
@@ -66,6 +62,7 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 
 
 
