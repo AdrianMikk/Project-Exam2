@@ -7,7 +7,7 @@ const Register = () => {
   const [isVenueManager, setIsVenueManager] = useState(false);
   const [error, setError] = useState('');
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
     if (!email.endsWith('@stud.noroff.no')) {
@@ -22,8 +22,32 @@ const Register = () => {
     }
 
     // If all validations pass, proceed with registration
-    console.log('Registration successful!');
-    console.log('Is Venue Manager:', isVenueManager);
+    setError('');
+
+    try {
+      const response = await fetch('https://v2.api.noroff.dev/holidaze/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          isVenueManager: isVenueManager,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Registration failed');
+      }
+
+      console.log('Registration successful!');
+      console.log('Is Venue Manager:', isVenueManager);
+    } catch (error) {
+      console.error(error);
+      setError('Registration failed. Please try again later.');
+    }
   };
 
   return (

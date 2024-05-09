@@ -1,17 +1,24 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate(); 
 
   const handleLogin = (e) => {
     e.preventDefault();
 
     console.log('Hai...');
 
-    // For demonstration, simply show the login details
     console.log(`Email: ${email}, Password: ${password}`);
+
+    if (email && password) {
+      navigate('/venues');
+    } else {
+      setError('Invalid email or password');
+    }
   };
 
   return (
@@ -46,7 +53,7 @@ const Login = () => {
           </div>
           <button type="submit" className="w-full bg-blue text-white py-2 rounded-md hover:bg-blue transition duration-300">Login</button>
           <p className="text-center mt-4">
-            Don't have an account? <a href="/register" className="text-blue-400 hover:underline">Register</a>
+            Dont have an account? <a href="/register" className="text-blue-400 hover:underline">Register</a>
           </p>
         </form>
       </div>
@@ -55,4 +62,3 @@ const Login = () => {
 };
 
 export default Login;
-

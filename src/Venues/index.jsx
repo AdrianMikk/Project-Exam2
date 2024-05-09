@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import CreateBooking from "../CreateBooking/index.jsx";
 
 function Venues() {
   const [searchTerm, setSearchTerm] = useState("");
   const [venues, setVenues] = useState([]);
   const [filteredVenues, setFilteredVenues] = useState([]);
   const [error, setError] = useState(null);
+  const [showCreateBooking, setShowCreateBooking] = useState(false); // State to control whether to show the CreateBooking form
 
   useEffect(() => {
     fetchVenues();
@@ -56,9 +58,19 @@ function Venues() {
       });
   };
 
+  // Function to toggle showing/hiding the CreateBooking form
+  const toggleCreateBooking = () => {
+    setShowCreateBooking(!showCreateBooking);
+  };
+
   return (
     <div className="container mx-auto px-4">
       <h3 className="text-4xl font-bold mb-8 text-center">Our Venues</h3>
+      <div className="flex justify-end mb-4">
+        <button onClick={toggleCreateBooking} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Create Booking</button>
+      </div>
+      {/* Conditionally render the CreateBooking form based on showCreateBooking state */}
+      {showCreateBooking && <CreateBooking />}
       {/* Search bar */}
       <input
         type="text"

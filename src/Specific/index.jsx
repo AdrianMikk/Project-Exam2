@@ -1,10 +1,9 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Calendar from 'react-calendar';
-import { FaMapMarkerAlt, FaCity, FaGlobe, FaUserFriends } from "react-icons/fa";
+import { FaMapMarkerAlt, FaCity, FaGlobe, FaUserFriends, FaWifi, FaParking, FaCoffee, FaPaw } from "react-icons/fa";
 
-
-function VenueDetails() {
+const VenueDetails = () => {
   const { id } = useParams();
   const [venue, setVenue] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date()); 
@@ -58,25 +57,46 @@ function VenueDetails() {
             ))}
           </div>
         </div>
-        <div className="mb-4">
-          <p className="text-lg font-semibold mb-2 text-gray-800">Location:</p>
-          <div className="flex items-center mb-2 text-gray-600">
-            <FaMapMarkerAlt className="mr-2" />
-            <p className="text-sm">{venue.location.address}</p>
+        {/* Venue details */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div className="mb-4">
+            <div className="flex items-center mb-2 text-gray-600">
+              <FaMapMarkerAlt className="mr-2" />
+              <p className="text-sm">{venue.location.address}</p>
+            </div>
+            <div className="flex items-center mb-2 text-gray-600">
+              <FaCity className="mr-2" />
+              <p className="text-sm">{venue.location.city}</p>
+            </div>
+            <div className="flex items-center mb-2 text-gray-600">
+              <FaGlobe className="mr-2" />
+              <p className="text-sm">{venue.location.country}</p>
+            </div>
+            <div className="flex items-center text-gray-600">
+              <FaUserFriends className="mr-2" />
+              <p className="text-sm">Max Guests: {venue.maxGuests}</p>
+            </div>
           </div>
-          <div className="flex items-center mb-2 text-gray-600">
-            <FaCity className="mr-2" />
-            <p className="text-sm">{venue.location.city}</p>
-          </div>
-          <div className="flex items-center mb-2 text-gray-600">
-            <FaGlobe className="mr-2" />
-            <p className="text-sm">{venue.location.country}</p>
-          </div>
-          <div className="flex items-center text-gray-600">
-            <FaUserFriends className="mr-2" />
-            <p className="text-sm">Max Guests: {venue.maxGuests}</p>
+          <div className="mb-4">
+            <div className="flex items-center mb-2 text-gray-600">
+              <FaWifi className="mr-2" />
+              <p className="text-sm">{venue.meta.wifi ? "Free Wifi" : "No Wifi"}</p>
+            </div>
+            <div className="flex items-center mb-2 text-gray-600">
+              <FaParking className="mr-2" />
+              <p className="text-sm">{venue.meta.parking ? "Free Parking" : "No Parking"}</p>
+            </div>
+            <div className="flex items-center mb-2 text-gray-600">
+              <FaCoffee className="mr-2" />
+              <p className="text-sm">{venue.meta.breakfast ? "Free Breakfast" : "No Breakfast"}</p>
+            </div>
+            <div className="flex items-center text-gray-600">
+              <FaPaw className="mr-2" />
+              <p className="text-sm">{venue.meta.pets ? "Pets Allowed" : "No Pets Allowed"}</p>
+            </div>
           </div>
         </div>
+        {/* Calendar */}
         <div>
           <Calendar value={selectedDate} onChange={handleDateChange} className="rounded-lg shadow-md" />
         </div>
@@ -86,3 +106,4 @@ function VenueDetails() {
 }
 
 export default VenueDetails;
+

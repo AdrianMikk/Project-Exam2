@@ -6,7 +6,11 @@ const Navbar = () => {
   return (
     <header className="bg-blue-500 shadow-lg">
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
-        <h1 className="text-xl font-bold text-white">Holidaze</h1>
+        <h1 className="text-xl font-bold text-white">
+          <a href="/venues" className="hover:text-gray-100 text-white transition duration-300">
+            Holidaze
+          </a>
+        </h1>
         <div className="md:hidden">
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -48,6 +52,18 @@ const Navbar = () => {
             >
               Contact
             </a>
+            <a
+              href="/login"
+              className="block mt-4 md:inline-block text-white hover:text-gray-100 transition duration-300"
+            >
+              Login
+            </a>
+            {/* <a
+              href="/register"
+              className="block mt-4 md:inline-block text-white hover:text-gray-100 transition duration-300"
+            >
+              Register
+            </a> */}
           </div>
           {/* <button
             className="mt-4 md:mt-0 md:ml-4 text-white bg-red-900 rounded-md px-4 py-2 hover:bg-red-800 transition duration-300"
@@ -62,6 +78,8 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
 
 
 
