@@ -7,12 +7,16 @@ const VenueDetails = () => {
   const { id } = useParams();
   const [venue, setVenue] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date()); 
+  const [availableDates, setAvailableDates] = useState([]);
 
   useEffect(() => {
     fetch(`https://v2.api.noroff.dev/holidaze/venues/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setVenue(data.data);
+        if (data.data.availableDates) {
+          setAvailableDates(data.data.availableDates);
+        }
       })
       .catch((error) => {
         console.error("Error fetching venue:", error);
@@ -21,6 +25,12 @@ const VenueDetails = () => {
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
+  };
+
+  const isDateAvailable = (date) => {
+    return availableDates.some((availableDate) => {
+      return new Date(availableDate).toDateString() === date.toDateString();
+    });
   };
 
   if (!venue) {
@@ -98,7 +108,13 @@ const VenueDetails = () => {
         </div>
         {/* Calendar */}
         <div>
-          <Calendar value={selectedDate} onChange={handleDateChange} className="rounded-lg shadow-md" />
+          <h2 className="text-lg font-semibold mb-2">Available Dates:</h2>
+          <Calendar 
+            value={selectedDate} 
+            onChange={handleDateChange} 
+            className="rounded-lg shadow-md" 
+            tileDisabled={({date}) => !isDateAvailable(date)}
+          />
         </div>
       </div>
     </div>
@@ -106,4 +122,3 @@ const VenueDetails = () => {
 }
 
 export default VenueDetails;
-

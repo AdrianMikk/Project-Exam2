@@ -1,21 +1,24 @@
 import { useState } from 'react';
 
 const Register = () => {
+  const [name, setName] = useState(''); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isVenueManager, setIsVenueManager] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    // Validate email
     if (!email.endsWith('@stud.noroff.no')) {
       setError('You can only register with a stud.noroff.no email.');
       return;
     }
 
-    // Check if password matches the confirm password
+    // Validate password
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       return;
@@ -24,17 +27,20 @@ const Register = () => {
     // If all validations pass, proceed with registration
     setError('');
 
+    const body = {
+      name: name,
+      email: email,
+      password: password,
+      venueManager: isVenueManager,
+    };
+
     try {
-      const response = await fetch('https://v2.api.noroff.dev/holidaze/auth/register', {
+      const response = await fetch('https://v2.api.noroff.dev/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-          isVenueManager: isVenueManager,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
@@ -42,8 +48,12 @@ const Register = () => {
         throw new Error(errorData.message || 'Registration failed');
       }
 
-      console.log('Registration successful!');
-      console.log('Is Venue Manager:', isVenueManager);
+      setSuccessMessage('Registration successful!');
+      setName('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
+      setIsVenueManager(false);
     } catch (error) {
       console.error(error);
       setError('Registration failed. Please try again later.');
@@ -55,7 +65,20 @@ const Register = () => {
       <div className="max-w-md w-full p-6 bg-gray-800 rounded-md text-white">
         <h2 className="text-2xl font-semibold mb-6">Register</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
+        {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
         <form onSubmit={handleRegister}>
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-gray-300 mb-2">Name</label>
+            <input
+              type="text"
+              id="name"
+              className="w-full px-4 py-2 border rounded-md bg-gray-700 focus:outline-none focus:border-blue-500"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-300 mb-2">Email</label>
             <input
