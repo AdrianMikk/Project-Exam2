@@ -86,16 +86,6 @@ const CreateBooking = () => {
           className="border border-gray-300 rounded-md py-2 px-3 w-full"
         />
       </div>
-      {/* Date Selection */}
-      <div className="mb-6">
-        <label className="block mb-2 text-sm font-semibold">Select Date:</label>
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          className="border border-gray-300 rounded-md py-2 px-3 w-full"
-        />
-      </div>
       {/* Booking Details */}
       <form id="bookingForm" onSubmit={handleSubmit}>
         <div className="mb-6">
@@ -198,10 +188,10 @@ const CreateBooking = () => {
             </label>
           </div>
         </div>
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Create Booking</button>
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">List Venue</button>
       </form>
       {bookingSuccess && (
-        <p className="text-green-600 font-semibold mt-4">Booking created successfully!</p>
+        <p className="text-green-600 font-semibold mt-4">Venue listed successfully!</p>
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom'; 
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -7,9 +8,9 @@ const Navbar = () => {
     <header className="bg-blue-500 shadow-lg">
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
         <h1 className="text-xl font-bold text-white">
-          <a href="/venues" className="hover:text-gray-100 text-white transition duration-300">
+          <Link to="/venues" className="hover:text-gray-100 text-white transition duration-300">
             Holidaze
-          </a>
+          </Link>
         </h1>
         <div className="md:hidden">
           <button
@@ -34,36 +35,36 @@ const Navbar = () => {
         </div>
         <nav className={`md:flex md:items-center md:w-auto ${isOpen ? 'block' : 'hidden'}`}>
           <div className="flex flex-col md:flex-row md:space-x-4">
-            <a
-              href="/venues"
+            <Link
+              to="/venues" 
               className="block mt-4 md:inline-block text-white hover:text-gray-100 transition duration-300"
             >
               Home
-            </a>
-            <a
-              href="/profile"
+            </Link>
+            <Link
+              to="/profile" 
               className="block mt-4 md:inline-block text-white hover:text-gray-100 transition duration-300"
             >
               Profile
-            </a>
-            <a
-              href="/contact"
+            </Link>
+            <Link
+              to="/contact" 
               className="block mt-4 md:inline-block text-white hover:text-gray-100 transition duration-300"
             >
               Contact
-            </a>
-            <a
-              href="/login"
+            </Link>
+            <Link
+              to="/login" 
               className="block mt-4 md:inline-block text-white hover:text-gray-100 transition duration-300"
             >
               Login
-            </a>
-            {/* <a
-              href="/register"
+            </Link>
+            {/* <Link
+              to="/register" 
               className="block mt-4 md:inline-block text-white hover:text-gray-100 transition duration-300"
             >
               Register
-            </a> */}
+            </Link> */}
           </div>
           {/* <button
             className="mt-4 md:mt-0 md:ml-4 text-white bg-red-900 rounded-md px-4 py-2 hover:bg-red-800 transition duration-300"
@@ -78,9 +79,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
-
-
-
-
