@@ -198,3 +198,235 @@ const CreateBooking = () => {
 };
 
 export default CreateBooking;
+
+// import { useState } from "react";
+
+// const CreateBooking = () => {
+//   const [selectedDate, setSelectedDate] = useState("");
+//   console.log("selectedDate:", selectedDate);
+//   const [bookingDetails, setBookingDetails] = useState({
+//     name: "",
+//     email: "",
+//     city: "",
+//     country: "",
+//     address: "",
+//     maxGuests: "",
+//     wifi: false,
+//     parking: false,
+//     breakfast: false,
+//     petsAllowed: false,
+//     media: {
+//       url: "",
+//       alt: ""
+//     },
+//     description: ""
+//   });
+//   const [bookingSuccess, setBookingSuccess] = useState(false);
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     const url = "https://v2.api.noroff.dev/holidaze/venues";
+//     const token = localStorage.getItem("token");
+//     const apiKey = localStorage.getItem("apiKey");
+
+//     const price = parseFloat(document.getElementById("venuePrice").value);
+//     const maxGuests = parseInt(bookingDetails.maxGuests);
+
+//     const body = {
+//       name: bookingDetails.name,
+//       description: bookingDetails.description,
+//       media: [
+//         {
+//           url: bookingDetails.media.url,
+//           alt: bookingDetails.media.alt,
+//         },
+//       ],
+//       price: !isNaN(price) ? price : 0,
+//       maxGuests: !isNaN(maxGuests) ? maxGuests : 0,
+//       meta: {
+//         wifi: bookingDetails.wifi,
+//         parking: bookingDetails.parking,
+//         breakfast: bookingDetails.breakfast,
+//         pets: bookingDetails.petsAllowed,
+//       },
+//       location: {
+//         address: bookingDetails.address,
+//         city: bookingDetails.city,
+//         country: bookingDetails.country,
+//       },
+//     };
+
+//     const options = {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//         "X-Noroff-API-Key": apiKey,
+//       },
+//       body: JSON.stringify(body),
+//     };
+
+//     try {
+//       const response = await fetch(url, options);
+//       if (!response.ok) {
+//         throw new Error(`HTTP error! Status: ${response.status}`);
+//       }
+//       const data = await response.json();
+//       console.log("Venue added successfully!", data);
+//       setBookingSuccess(true);
+//       document.getElementById("bookingForm").reset();
+//       setSelectedDate("");
+//       setBookingDetails({
+//         name: "",
+//         email: "",
+//         city: "",
+//         country: "",
+//         address: "",
+//         maxGuests: "",
+//         wifi: false,
+//         parking: false,
+//         breakfast: false,
+//         petsAllowed: false,
+//         media: {
+//           url: "",
+//           alt: ""
+//         },
+//         description: ""
+//       });
+//     } catch (error) {
+//       console.error("Error adding venue:", error);
+//     }
+//   };
+
+//   return (
+//     <div className="max-w-3xl mx-auto p-4">
+//       <h1 className="text-3xl font-bold mb-6 text-center">Create Booking</h1>
+//       <div className="mb-6">
+//         <label htmlFor="venueName" className="block mb-2 text-sm font-semibold">Name of Venue:</label>
+//         <input
+//           type="text"
+//           id="venueName"
+//           className="border border-gray-300 rounded-md py-2 px-3 w-full"
+//         />
+//       </div>
+//       <div className="mb-6">
+//         <label htmlFor="venuePrice" className="block mb-2 text-sm font-semibold">Price:</label>
+//         <input
+//           type="text"
+//           id="venuePrice"
+//           className="border border-gray-300 rounded-md py-2 px-3 w-full"
+//         />
+//       </div>
+//       <form id="bookingForm" onSubmit={handleSubmit}>
+//         <div className="mb-6">
+//           <label htmlFor="city" className="block mb-2 text-sm font-semibold">City:</label>
+//           <input
+//             type="text"
+//             id="city"
+//             value={bookingDetails.city}
+//             onChange={(e) => setBookingDetails({ ...bookingDetails, city: e.target.value })}
+//             className="border border-gray-300 rounded-md py-2 px-3 w-full"
+//           />
+//         </div>
+//         <div className="mb-6">
+//           <label htmlFor="country" className="block mb-2 text-sm font-semibold">Country:</label>
+//           <input
+//             type="text"
+//             id="country"
+//             value={bookingDetails.country}
+//             onChange={(e) => setBookingDetails({ ...bookingDetails, country: e.target.value })}
+//             className="border border-gray-300 rounded-md py-2 px-3 w-full"
+//           />
+//         </div>
+//         <div className="mb-6">
+//           <label htmlFor="address" className="block mb-2 text-sm font-semibold">Address:</label>
+//           <input
+//             type="text"
+//             id="address"
+//             value={bookingDetails.address}
+//             onChange={(e) => setBookingDetails({ ...bookingDetails, address: e.target.value })}
+//             className="border border-gray-300 rounded-md py-2 px-3 w-full"
+//           />
+//         </div>
+//         <div className="mb-6">
+//           <label htmlFor="maxGuests" className="block mb-2 text-sm font-semibold">Max Guests:</label>
+//           <input
+//             type="number"
+//             id="maxGuests"
+//             value={bookingDetails.maxGuests}
+//             onChange={(e) => setBookingDetails({ ...bookingDetails, maxGuests: e.target.value })}
+//             className="border border-gray-300 rounded-md py-2 px-3 w-full"
+//           />
+//         </div>
+//         <div className="mb-6">
+//           <label htmlFor="imageURL" className="block mb-2 text-sm font-semibold">Image URL:</label>
+//           <input
+//             type="text"
+//             id="imageURL"
+//             value={bookingDetails.media.url}
+//             onChange={(e) => setBookingDetails({ ...bookingDetails, media: { ...bookingDetails.media, url: e.target.value } })}
+//             className="border border-gray-300 rounded-md py-2 px-3 w-full"
+//           />
+//         </div>
+//         <div className="mb-6">
+//           <label htmlFor="description" className="block mb-2 text-sm font-semibold">Description:</label>
+//           <textarea
+//             id="description"
+//             value={bookingDetails.description}
+//             onChange={(e) => setBookingDetails({ ...bookingDetails, description: e.target.value })}
+//             className="border border-gray-300 rounded-md py-2 px-3 w-full h-32"
+//           />
+//         </div>
+//         <div className="mb-6">
+//           <label className="block mb-2 text-sm font-semibold">Amenities:</label>
+//           <div className="flex flex-wrap items-center">
+//             <label className="mr-4 flex items-center">
+//               <input
+//                 type="checkbox"
+//                 checked={bookingDetails.wifi}
+//                 onChange={(e) => setBookingDetails({ ...bookingDetails, wifi: e.target.checked })}
+//                 className="mr-2"
+//               />
+//               Wifi
+//             </label>
+//             <label className="mr-4 flex items-center">
+//               <input
+//                 type="checkbox"
+//                 checked={bookingDetails.parking}
+//                 onChange={(e) => setBookingDetails({ ...bookingDetails, parking: e.target.checked })}
+//                 className="mr-2"
+//               />
+//               Parking
+//             </label>
+//             <label className="mr-4 flex items-center">
+//               <input
+//                 type="checkbox"
+//                 checked={bookingDetails.breakfast}
+//                 onChange={(e) => setBookingDetails({ ...bookingDetails, breakfast: e.target.checked })}
+//                 className="mr-2"
+//               />
+//               Breakfast
+//             </label>
+//             <label className="flex items-center">
+//               <input
+//                 type="checkbox"
+//                 checked={bookingDetails.petsAllowed}
+//                 onChange={(e) => setBookingDetails({ ...bookingDetails, petsAllowed: e.target.checked })}
+//                 className="mr-2"
+//               />
+//               Pets Allowed
+//             </label>
+//           </div>
+//         </div>
+//         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">List Venue</button>
+//       </form>
+//       {bookingSuccess && (
+//         <p className="text-green-600 font-semibold mt-4">Venue listed successfully!</p>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default CreateBooking;
+
