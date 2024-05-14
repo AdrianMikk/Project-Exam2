@@ -29,18 +29,20 @@ const CreateBooking = () => {
     };
 
     try {
-      const accessToken = import.meta.env.VITE_TOKEN_KEY;
-      const apiKey = import.meta.env.VITE_API_KEY;
-      console.log(apiKey);
+      console.log("Attempting to fetch with access token:", import.meta.env.VITE_TOKEN_KEY);
+      console.log("Using API key:", import.meta.env.VITE_API_KEY);
+
       const response = await fetch("https://v2.api.noroff.dev/holidaze/venues", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${accessToken}`,
-          "X-Noroff-API-Key": apiKey
+          "Authorization": `Bearer ${import.meta.env.VITE_TOKEN_KEY}`,
+          "X-Noroff-API-Key": import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify(newBooking)
       });
+    
+      console.log("Response status:", response.status);
     
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
