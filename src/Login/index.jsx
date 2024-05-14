@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -7,66 +7,49 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('https://v2.api.noroff.dev/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-        });
-
-        const data = await response.json();
-
-        console.log(data);
-        if (data && data.accessToken) {
-          localStorage.setItem('accessToken', data.accessToken);
-          localStorage.setItem('user', JSON.stringify(data));
-
-          // Check if user is registered
-          if (data.isRegistered) {
-            navigate('/venues');
-          } else {
-            setError('You need to be registered.');
-          }
-        } else {
-          setError('Invalid email or password');
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setError('Error logging in. Please try again later.');
-      }
-    };
-
-    if (email && password) {
-      if (email.endsWith('@stud.noroff.no')) {
-        fetchData();
-      } else {
-        setError('Email must end with stud.noroff.no');
-      }
-    }
-  }, [email, password, navigate]);
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    console.log('Hai...');
+    setError('');
 
-    console.log(`Email: ${email}, Password: ${password}`);
-
-    if (email && password) {
-      console.log('Email and password are required');
-      setError('');
-
-      if (email.endsWith('@stud.noroff.no')) {
-        console.log('Email must end with @stud.noroff.no');
-      } else {
-        console.log('Invalid email or password');
-      }
-    } else {
+    if (!email || !password) {
       setError('Email and password are required');
+      return;
+    }
+
+    if (!email.endsWith('@stud.noroff.no')) {
+      setError('Email must end with @stud.noroff.no');
+      return;
+    }
+
+    try {
+      const response = await fetch("https://v2.api.noroff.dev/auth/login", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      console.log('Data:', data);
+
+      if (response.ok) {
+        localStorage.setItem('accessToken', data.data.accessToken);
+        localStorage.setItem('user', JSON.stringify(data));
+        console.log('Is Registered:', data.data.isRegistered); 
+        // Check if user is registered
+        if (data.data.isRegistered) {
+          navigate('/venues');
+        } else {
+          setError('You need to be registered.');
+        }
+      } else {
+        setError('Invalid email or password');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setError('Error logging in. Please try again later.');
     }
   };
 
