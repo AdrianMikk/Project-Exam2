@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const CreateBooking = () => {
+const CreateVenue = () => {
   const [venuePrice, setVenuePrice] = useState(""); 
   const [bookingDetails, setBookingDetails] = useState({
     name: "",
@@ -244,4 +244,4 @@ const CreateBooking = () => {
   );
 };
 
-export default CreateBooking;
+export default CreateVenue;
