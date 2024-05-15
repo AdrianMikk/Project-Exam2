@@ -1,12 +1,13 @@
 import { useState } from "react";
+// import { v4 as uuidv4 } from 'uuid'; // Import UUID library
 
 const CreateBooking = () => {
-  const [selectedDate, setSelectedDate] = useState("");
+  const [venuePrice, setVenuePrice] = useState(""); 
   const [bookingDetails, setBookingDetails] = useState({
     name: "",
-    email: "",
     city: "",
     country: "",
+    continent: "",
     address: "",
     maxGuests: "",
     wifi: false,
@@ -19,69 +20,82 @@ const CreateBooking = () => {
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
   // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
-    const newBooking = {
-      ...bookingDetails,
-      venue: document.getElementById("venueName").value,
-      date: selectedDate
+    const apiKey = import.meta.env.VITE_API_KEY;
+    const accessToken = import.meta.env.VITE_TOKEN_KEY;
+
+    console.log('apiKey:', apiKey);
+    console.log('accessToken:', accessToken);
+
+    console.log('venuePrice:', venuePrice);
+    console.log('bookingDetails:', bookingDetails);
+
+    const bookingData = {
+      dateFrom: new Date().toISOString(),
+      dateTo: new Date().toISOString(),
+      guests: parseInt(bookingDetails.maxGuests), 
+      price: parseInt(venuePrice),
+      name: bookingDetails.name,
+      city: bookingDetails.city,
+      country: bookingDetails.country,
+      continent: bookingDetails.continent,
+      address: bookingDetails.address,
+      maxGuests: parseInt(bookingDetails.maxGuests),
+      wifi: bookingDetails.wifi,
+      parking: bookingDetails.parking,
+      breakfast: bookingDetails.breakfast,
+      petsAllowed: bookingDetails.petsAllowed,
+      imageURL: bookingDetails.imageURL,
+      description: bookingDetails.description
     };
 
-    try {
-      console.log("Attempting to fetch with access token:", import.meta.env.VITE_TOKEN_KEY);
-      console.log("Using API key:", import.meta.env.VITE_API_KEY);
+    console.log('bookingData:', bookingData);
 
-      const response = await fetch("https://v2.api.noroff.dev/holidaze/venues", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.VITE_TOKEN_KEY}`,
-          "X-Noroff-API-Key": import.meta.env.VITE_API_KEY
-        },
-        body: JSON.stringify(newBooking)
+    fetch('https://v2.api.noroff.dev/holidaze/venues', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-noroff-api-key': apiKey,
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(bookingData),
+    })
+      .then((response) => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Booking created successfully:', data);
+        // Handle successful booking
+        setBookingSuccess(true);
+      })
+      .catch((error) => {
+        console.error('Error creating booking:', error);
+        setBookingSuccess(false);
       });
-    
-      console.log("Response status:", response.status);
-    
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-    
-      const data = await response.json();
-      console.log("Booking created successfully!", data);
-      setBookingSuccess(true);
-      // Reset form after successful booking creation
-      document.getElementById("bookingForm").reset();
-      setSelectedDate("");
-      setBookingDetails({
-        name: "",
-        email: "",
-        city: "",
-        country: "",
-        address: "",
-        maxGuests: "",
-        wifi: false,
-        parking: false,
-        breakfast: false,
-        petsAllowed: false,
-        imageURL: "",
-        description: ""
-      });
-    } catch (error) {
-      console.error("Error creating booking:", error);
-    }
-  };    
+  };
+
+  // // Function to generate a UUID
+  // const generateUUID = () => {
+  //   return uuidv4(); // Generate a random UUID
+  // };
 
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">Create Booking</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">Create Venue</h1>
       {/* Venue Selection */}
       <div className="mb-6">
-        <label htmlFor="venueName" className="block mb-2 text-sm font-semibold">Name of Venue:</label>
+        <label htmlFor="name" className="block mb-2 text-sm font-semibold">Name</label>
         <input
           type="text"
-          id="venueName"
+          id="name"
+          value={bookingDetails.name}
+          onChange={(e) => setBookingDetails({ ...bookingDetails, name: e.target.value })}
           className="border border-gray-300 rounded-md py-2 px-3 w-full"
         />
       </div>
@@ -90,6 +104,8 @@ const CreateBooking = () => {
         <input
           type="text"
           id="venuePrice"
+          value={venuePrice}
+          onChange={(e) => setVenuePrice(e.target.value)}
           className="border border-gray-300 rounded-md py-2 px-3 w-full"
         />
       </div>
@@ -198,7 +214,7 @@ const CreateBooking = () => {
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">List Venue</button>
       </form>
       {bookingSuccess && (
-        <p className="text-green-600 font-semibold mt-4">Venue listed successfully!</p>
+        <p className="text-green-600 font-semibold mt-4">Booking created successfully!</p>
       )}
     </div>
   );

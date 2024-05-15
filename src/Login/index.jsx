@@ -35,15 +35,13 @@ const Login = () => {
       console.log('Data:', data);
 
       if (response.ok) {
+        // setIsRegistered(true);
         localStorage.setItem('accessToken', data.data.accessToken);
         localStorage.setItem('user', JSON.stringify(data));
         console.log('Is Registered:', data.data.isRegistered); 
         // Check if user is registered
-        if (data.data.isRegistered) {
           navigate('/venues');
-        } else {
           setError('You need to be registered.');
-        }
       } else {
         setError('Invalid email or password');
       }

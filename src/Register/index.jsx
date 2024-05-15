@@ -58,7 +58,7 @@ const Register = () => {
       console.error(error);
       setError('Registration failed. Please try again later.');
     }
-  };
+  };    
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100">
@@ -121,8 +121,8 @@ const Register = () => {
                 type="checkbox"
                 id="isVenueManager"
                 className="mr-2"
-                checked={isVenueManager}
-                onChange={() => setIsVenueManager(!isVenueManager)}
+                // checked={isVenueManager}
+                onChange={() => setIsVenueManager(isVenueManager)}
               />
               Register as Venue Manager
             </label>

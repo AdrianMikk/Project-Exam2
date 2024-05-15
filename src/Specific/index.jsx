@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css'; 
 import { FaMapMarkerAlt, FaCity, FaGlobe, FaUserFriends, FaWifi, FaParking, FaCoffee, FaPaw } from "react-icons/fa";
 
 const VenueDetails = () => {
@@ -125,13 +126,13 @@ const VenueDetails = () => {
           </div>
         </div>
         {/* Calendar */}
-        <div>
+        <div className="text-center">
           <h2 className="text-lg font-semibold mb-2">Available Dates:</h2>
           <Calendar 
             value={selectedDate} 
             onChange={handleDateChange} 
-            className="rounded-lg shadow-md" 
-            tileDisabled={({date}) => !isDateAvailable(date)}
+            className="mx-auto rounded-lg shadow-md text-black w-full sm:w-96"
+            tileClassName={({date}) => isDateAvailable(date) ? "bg-green-200 text-black" : "bg-red-200 text-black"}
           />
         </div>
         {/* Booking form */}
@@ -155,13 +156,6 @@ const VenueDetails = () => {
           >
             Book Now
           </button>
-          {/* <button 
-  type="submit" 
-  className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue hover:bg-blue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
->
-  Book Now
-</button> */}
-
         </form>
         {/* Booking status */}
         {bookingStatus === "success" && <p className="text-green-500 mt-4">Booking successful!</p>}
