@@ -41,7 +41,6 @@ const VenueDetails = () => {
     if (numGuests <= venue.maxGuests) {
       setGuests(numGuests);
     } else {
-      // If number of guests exceeds max, set guests to maxGuests
       setGuests(venue.maxGuests);
     }
   };
@@ -51,7 +50,7 @@ const VenueDetails = () => {
 
     const bookingData = {
       dateFrom: selectedDate.toISOString(),
-      dateTo: selectedDate.toISOString(), // For simplicity, assuming same date for dateFrom and dateTo
+      dateTo: selectedDate.toISOString(), 
       guests: guests,
       venueId: id
     };
@@ -87,6 +86,31 @@ const VenueDetails = () => {
           <img key={index} src={image.url} alt={`${venue.title}-image-${index}`} className="w-full h-auto mb-4 rounded-lg shadow-md" />
         ))}
         <p className="text-lg text-gray-800 mb-4">{venue.description}</p>
+        <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <svg
+                        key={i}
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill={
+                          i < venue.rating
+                            ? "#FFD700"
+                            : "none"
+                        }
+                        className={`w-6 h-6 ${
+                          i < venue.rating
+                            ? "text-yellow-500"
+                            : "text-gray-300"
+                        }`}
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 1.638l1.482 4.537h4.796l-3.878 2.821 1.482 4.538-3.879-2.823-3.878 2.823 1.482-4.538-3.878-2.82h4.795z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ))}
+                  </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <div className="mb-4">
             <div className="flex items-center mb-2 text-gray-600">

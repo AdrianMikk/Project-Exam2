@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import CreateBooking from "../CreateBooking/index.jsx";
-import axios from "axios"; // Import axios for making HTTP requests
+import axios from "axios"; 
 
 const Profile = () => {
   const [avatarUrl, setAvatarUrl] = useState(() => {
@@ -56,6 +56,14 @@ const Profile = () => {
   // Function to toggle showing/hiding the CreateBooking form
   const toggleCreateBooking = () => {
     setShowCreateBooking(!showCreateBooking);
+  };
+
+  // Function to handle logout
+  const handleLogout = () => {
+    // Perform any necessary cleanup, e.g., removing tokens from localStorage
+    localStorage.removeItem("avatarUrl");
+    // Redirect to the login page
+    window.location.href = "/login";
   };
 
   return (
@@ -118,6 +126,13 @@ const Profile = () => {
               <p>No upcoming bookings.</p>
             )}
           </div>
+          {/* Logout button */}
+          <button 
+            onClick={handleLogout} 
+            className="bg-red text-white mt-6 px-4 py-2 rounded-md hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </div>

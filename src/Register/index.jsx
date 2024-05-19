@@ -127,6 +127,20 @@ const Register = () => {
               Register as Venue Manager
             </label>
           </div>
+          
+          {/* <div className="mb-4">
+  <label htmlFor="isVenueManager" className="flex items-center">
+    <input
+      type="checkbox"
+      id="isVenueManager"
+      className="mr-2"
+      checked={isVenueManager} // Add checked attribute to the checkbox
+      onChange={() => setIsVenueManager(!isVenueManager)} // Toggle the value when checked/unchecked
+    />
+    Register as Venue Manager
+  </label>
+</div> */}
+
           <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300">Register</button>
         </form>
       </div>
