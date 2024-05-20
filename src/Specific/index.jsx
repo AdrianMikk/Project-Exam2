@@ -41,6 +41,7 @@ const VenueDetails = () => {
     if (numGuests <= venue.maxGuests) {
       setGuests(numGuests);
     } else {
+      // If number of guests exceeds max, set guests to maxGuests
       setGuests(venue.maxGuests);
     }
   };
@@ -50,7 +51,7 @@ const VenueDetails = () => {
 
     const bookingData = {
       dateFrom: selectedDate.toISOString(),
-      dateTo: selectedDate.toISOString(), 
+      dateTo: selectedDate.toISOString(), // For simplicity, assuming same date for dateFrom and dateTo
       guests: guests,
       venueId: id
     };
@@ -86,7 +87,7 @@ const VenueDetails = () => {
           <img key={index} src={image.url} alt={`${venue.title}-image-${index}`} className="w-full h-auto mb-4 rounded-lg shadow-md" />
         ))}
         <p className="text-lg text-gray-800 mb-4">{venue.description}</p>
-        <div className="flex items-center">
+                          <div className="flex items-center">
                     {[...Array(5)].map((_, i) => (
                       <svg
                         key={i}
@@ -176,7 +177,7 @@ const VenueDetails = () => {
           </div>
           <button 
             type="submit" 
-            className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="inline-flex items-center bg-blue text-white py-2 rounded-md hover:bg-darkblue"
           >
             Book Now
           </button>

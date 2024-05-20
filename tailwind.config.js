@@ -17,6 +17,9 @@ export default {
             darkgrey: "#333138",
         },
         extend: {
+            colors: {
+                darkblue: "#1C4CBA",
+            },
             animation: {
                 glow: "glow 1s infinite alternate",
             },
@@ -33,6 +36,11 @@ export default {
             boxShadow: {
                 glow: "0 0 20px 5px rgba(255, 255, 250, 0.3)",
             },
+        },
+    },
+    variants: {
+        extend: {
+            backgroundColor: ['hover'],
         },
     },
     plugins: [],

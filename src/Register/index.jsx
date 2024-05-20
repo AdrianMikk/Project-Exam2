@@ -53,7 +53,6 @@ const Register = () => {
       setEmail('');
       setPassword('');
       setConfirmPassword('');
-      setIsVenueManager(false);
     } catch (error) {
       console.error(error);
       setError('Registration failed. Please try again later.');
@@ -121,27 +120,13 @@ const Register = () => {
                 type="checkbox"
                 id="isVenueManager"
                 className="mr-2"
-                // checked={isVenueManager}
-                onChange={() => setIsVenueManager(isVenueManager)}
+                checked={isVenueManager}
+                onChange={() => setIsVenueManager(!isVenueManager)}
               />
               Register as Venue Manager
             </label>
           </div>
-          
-          {/* <div className="mb-4">
-  <label htmlFor="isVenueManager" className="flex items-center">
-    <input
-      type="checkbox"
-      id="isVenueManager"
-      className="mr-2"
-      checked={isVenueManager} // Add checked attribute to the checkbox
-      onChange={() => setIsVenueManager(!isVenueManager)} // Toggle the value when checked/unchecked
-    />
-    Register as Venue Manager
-  </label>
-</div> */}
-
-          <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300">Register</button>
+          <button type="submit" className="w-full bg-blue text-white py-2 rounded-md hover:bg-darkblue transition duration-300">Register</button>
         </form>
       </div>
     </div>

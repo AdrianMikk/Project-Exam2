@@ -5,32 +5,29 @@ import axios from "axios";
 const Profile = () => {
   const [avatarUrl, setAvatarUrl] = useState(() => {
     // Retrieve avatar URL from localStorage if it exists, otherwise use default
-    return localStorage.getItem("avatarUrl") || "https://v2.api.noroff.dev/holidaze/profiles/default-avatar.jpg";
+    return localStorage.getItem("avatarUrl") || "https://v2.api.noroff.dev/holidaze/profiles";
   });
 
-  const [imageUrlInput, setImageUrlInput] = useState(""); // State to store the input value
-  const [showCreateBooking, setShowCreateBooking] = useState(false); // State to control whether to show the CreateBooking form
-  const [bookings, setBookings] = useState([]); // State to store user's bookings
+  const [imageUrlInput, setImageUrlInput] = useState(""); 
+  const [showCreateBooking, setShowCreateBooking] = useState(false); 
+  const [bookings, setBookings] = useState([]); 
 
   useEffect(() => {
     // Save avatarUrl to localStorage whenever it changes
     localStorage.setItem("avatarUrl", avatarUrl);
   }, [avatarUrl]);
 
-  // Simulated booking data
   useEffect(() => {
-    // This could be an API call to retrieve actual user bookings
     const userBookings = [
-      { id: 1, venue: "Venue 1", date: "2024-05-15" },
-      { id: 2, venue: "Venue 2", date: "2024-05-18" },
-      // Add more bookings as needed
+      // { id: 1, venue: "Venue 1", date: "2024-05-15" },
+      // { id: 2, venue: "Venue 2", date: "2024-05-18" },
     ];
     setBookings(userBookings);
   }, []);
 
   const handleAvatarChange = (event) => {
     const newAvatarUrl = event.target.value;
-    setImageUrlInput(newAvatarUrl); // Update the input value state
+    setImageUrlInput(newAvatarUrl); 
   };
 
   const handleImageUrlSubmit = () => {
@@ -38,7 +35,7 @@ const Profile = () => {
       // Update avatarUrl only if input is not empty
       setAvatarUrl(imageUrlInput);
       // Send a PUT request to update the profile with new avatar URL
-      axios.put(`https://v2.api.noroff.dev/holidaze/profiles/Hoisky`, {
+      axios.put(`https://v2.api.noroff.dev/holidaze/profiles`, {
         avatar: {
           url: imageUrlInput,
           alt: "User Profile"
@@ -53,16 +50,13 @@ const Profile = () => {
     }
   };
 
-  // Function to toggle showing/hiding the CreateBooking form
+  // Toggle showing/hiding the CreateVenue form
   const toggleCreateBooking = () => {
     setShowCreateBooking(!showCreateBooking);
   };
 
-  // Function to handle logout
   const handleLogout = () => {
-    // Perform any necessary cleanup, e.g., removing tokens from localStorage
     localStorage.removeItem("avatarUrl");
-    // Redirect to the login page
     window.location.href = "/login";
   };
 
@@ -109,7 +103,7 @@ const Profile = () => {
           <div className="flex justify-end mb-4">
             <button onClick={toggleCreateBooking} className="bg-blue-500 text-white mt-6 px-4 py-2 rounded-md hover:bg-blue-600">List New Venue</button>
           </div>
-          {showCreateBooking && <CreateBooking />} {/* Conditionally render the CreateBooking form based on showCreateBooking state */}
+          {showCreateBooking && <CreateBooking />} 
           <div className="mt-4">
             <h2 className="text-lg font-semibold mb-2 text-white">
               Upcoming Bookings

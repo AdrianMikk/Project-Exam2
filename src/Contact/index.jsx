@@ -100,7 +100,7 @@ function ContactForm() {
                   required
                 />
               </div>
-              <button type="submit" className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:bg-green-600">Submit</button>
+              <button type="submit" className="w-full bg-blue text-white py-2 rounded-md hover:bg-darkblue transition duration-300">Submit</button>
             </form>
           )}
         </div>
