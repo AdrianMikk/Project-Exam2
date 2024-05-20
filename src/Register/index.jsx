@@ -121,7 +121,7 @@ const Register = () => {
                 id="isVenueManager"
                 className="mr-2"
                 checked={isVenueManager}
-                onChange={() => setIsVenueManager(!isVenueManager)}
+                onChange={() => setIsVenueManager(isVenueManager)}
               />
               Register as Venue Manager
             </label>
