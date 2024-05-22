@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import CreateVenue from "../CreateBooking/index";
-import axios from "axios";
 
 const Profile = () => {
   const [avatarUrl, setAvatarUrl] = useState(() => {
@@ -12,7 +11,8 @@ const Profile = () => {
   const [bookings, setBookings] = useState([]);
   const [venues, setVenues] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+  const apiKey = import.meta.env.VITE_API_KEY;
+  
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
     setIsAuthenticated(!!accessToken);
@@ -20,20 +20,25 @@ const Profile = () => {
       return;
     }
 
-    const fetchVenues = async () => {
+    const fetchProfileData = async () => {
       try {
-        const response = await axios.get('https://v2.api.noroff.dev/holidaze/venues', {
+        const name = localStorage.getItem('username'); 
+        const response = await fetch(`https://v2.api.noroff.dev/holidaze/profiles/${name}?_venues=true&_bookings=true`, {
           headers: {
+            'Content-Type': 'application/json',
+            'x-noroff-api-key': apiKey,
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        setVenues(response.data);
+        const data = await response.json();
+        setVenues(data.venues); 
+        setBookings(data.bookings); 
       } catch (error) {
-        console.error("Error fetching venues:", error);
+        console.error("Error fetching profile data:", error);
       }
     };
 
-    fetchVenues();
+    fetchProfileData();
   }, []);
 
   useEffect(() => {
@@ -41,7 +46,6 @@ const Profile = () => {
   }, [avatarUrl]);
 
   useEffect(() => {
-    // Assuming the booking status is stored in localStorage
     const bookingStatus = localStorage.getItem('bookingStatus');
     if (bookingStatus) {
       setBookings(prevBookings => [...prevBookings, JSON.parse(bookingStatus)]);
@@ -61,18 +65,23 @@ const Profile = () => {
         console.error("User is not authenticated");
         return;
       }
-      axios.put(`https://v2.api.noroff.dev/holidaze/profiles`, {
-        avatar: {
-          url: imageUrlInput,
-          alt: "User Profile"
-        }
-      }, {
+      fetch(`https://v2.api.noroff.dev/holidaze/profiles`, {
+        method: 'PUT',
         headers: {
+          'Content-Type': 'application/json',
+          'x-noroff-api-key': apiKey,
           Authorization: `Bearer ${accessToken}`
-        }
+        },
+        body: JSON.stringify({
+          avatar: {
+            url: imageUrlInput,
+            alt: "User Profile"
+          }
+        })
       })
-      .then(response => {
-        console.log("Profile updated successfully:", response.data);
+      .then(response => response.json())
+      .then(data => {
+        console.log("Profile updated successfully:", data);
       })
       .catch(error => {
         console.error("Error updating profile:", error);
@@ -147,7 +156,7 @@ const Profile = () => {
             <h2 className="text-lg font-semibold mb-2 text-white">
               Upcoming Bookings
             </h2>
-            {bookings.length > 0 ? (
+            {bookings && bookings.length > 0 ? (
               <ul className="text-gray-400">
                 {bookings.map((booking, index) => (
                   <li key={index}>
@@ -163,7 +172,7 @@ const Profile = () => {
             <h2 className="text-lg font-semibold mb-2 text-white">
               My Venues
             </h2>
-            {venues.length > 0 ? (
+            {venues && venues.length > 0 ? (
               <ul className="text-gray-400">
                 {venues.map(venue => (
                   <li key={venue.id}>

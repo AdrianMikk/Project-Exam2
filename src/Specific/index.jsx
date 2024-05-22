@@ -46,42 +46,42 @@ const VenueDetails = () => {
     }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-  
-    const apiKey = import.meta.env.VITE_API_KEY;
-    const accessToken = localStorage.getItem('accessToken');
-  
-    const firstDate = selectedDates[0]; // First date in the selected range
-    const lastDate = selectedDates[selectedDates.length - 1]; // Last date in the selected range
-  
-    const bookingData = {
-      dateFrom: firstDate.toISOString(), // Set dateFrom to the first date
-      dateTo: lastDate.toISOString(), // Set dateTo to the last date
-      guests: guests,
-      venueId: id
-    };
-  
-    fetch("https://v2.api.noroff.dev/holidaze/bookings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        'x-noroff-api-key': apiKey,
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(bookingData)
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log("Booking created successfully:", data);
-      // Handle successful booking
-      setBookingStatus("success");
-    })
-    .catch(error => {
-      console.error("Error creating booking:", error);
-      setBookingStatus("error");
-    });
+const handleSubmit = (event) => {
+  event.preventDefault();
+
+  const apiKey = import.meta.env.VITE_API_KEY;
+  const accessToken = localStorage.getItem('accessToken');
+
+  const firstDate = selectedDates[0]; // First date in the selected range
+  const lastDate = selectedDates[selectedDates.length - 1]; // Last date in the selected range
+
+  const bookingData = {
+    dateFrom: firstDate.toISOString(), // Set dateFrom to the first date
+    dateTo: lastDate.toISOString(), // Set dateTo to the last date
+    guests: guests,
+    venueId: id
   };
+
+  fetch("https://v2.api.noroff.dev/holidaze/bookings", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      'x-noroff-api-key': apiKey,
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(bookingData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log("Booking created successfully:", data);
+    // Handle successful booking
+    setBookingStatus("success");
+  })
+  .catch(error => {
+    console.error("Error creating booking:", error);
+    setBookingStatus("error");
+  });
+};
 
   if (!venue) {
     return <div>Loading...</div>;
