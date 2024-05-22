@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
-const CreateVenue = () => {
-  const [venuePrice, setVenuePrice] = useState(""); 
-  const [bookingDetails, setBookingDetails] = useState({
+const UpdateVenue = () => {
+  const { id } = useParams();
+  const [venuePrice, setVenuePrice] = useState("");
+  const [venueDetails, setVenueDetails] = useState({
     name: "",
     description: "",
     media: [{
@@ -26,74 +28,76 @@ const CreateVenue = () => {
       continent: ""
     }
   });
-  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
-  // Handle form submission
+  useEffect(() => {
+    const fetchVenueDetails = async () => {
+      try {
+        const response = await fetch(`https://v2.api.noroff.dev/holidaze/venues/${id}`);
+        const data = await response.json();
+        setVenueDetails(data.data);
+        setVenuePrice(data.data.price.toString());
+      } catch (error) {
+        console.error("Error fetching venue details:", error);
+      }
+    };
+
+    fetchVenueDetails();
+  }, [id]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
     const apiKey = import.meta.env.VITE_API_KEY;
-    // const accessToken = import.meta.env.VITE_TOKEN_KEY;
-    const accessToken = localStorage.getItem('accessToken'); 
+    const accessToken = localStorage.getItem('accessToken');
 
-    console.log('apiKey:', apiKey);
-    console.log('accessToken:', accessToken);
-
-    console.log('venuePrice:', venuePrice);
-    console.log('bookingDetails:', bookingDetails);
-
-    const bookingData = {
-      guests: parseInt(bookingDetails.maxGuests), 
+    const updatedData = {
+      guests: parseInt(venueDetails.maxGuests),
       price: parseInt(venuePrice),
-      name: bookingDetails.name,
-      description: bookingDetails.description,
-      media: bookingDetails.media,
-      maxGuests: parseInt(bookingDetails.maxGuests),
-      rating: bookingDetails.rating,
-      meta: bookingDetails.meta,
-      location: bookingDetails.location
+      name: venueDetails.name,
+      description: venueDetails.description,
+      media: venueDetails.media,
+      maxGuests: parseInt(venueDetails.maxGuests),
+      rating: venueDetails.rating,
+      meta: venueDetails.meta,
+      location: venueDetails.location
     };
 
-    console.log('bookingData:', bookingData);
-
-    fetch('https://v2.api.noroff.dev/holidaze/venues', {
-      method: 'POST',
+    fetch(`https://v2.api.noroff.dev/holidaze/venues/${id}`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'x-noroff-api-key': apiKey,
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify(bookingData),
+      body: JSON.stringify(updatedData),
     })
       .then((response) => {
-        console.log('Response status:', response.status);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         return response.json();
       })
       .then((data) => {
-        console.log('Booking created successfully:', data);
-        // Handle successful booking
-        setBookingSuccess(true);
+        console.log('Venue updated successfully:', data);
+        setUpdateSuccess(true);
       })
       .catch((error) => {
-        console.error('Error creating booking:', error);
-        setBookingSuccess(false);
+        console.error('Error updating venue:', error);
+        setUpdateSuccess(false);
       });
   };
 
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">Create Venue</h1>
-      {/* Venue Selection */}
+      <h1 className="text-3xl font-bold mb-6 text-center">Update Venue</h1>
       <div className="mb-6">
         <label htmlFor="name" className="block mb-2 text-sm font-semibold">Name</label>
         <input
           type="text"
           id="name"
-          value={bookingDetails.name}
-          onChange={(e) => setBookingDetails({ ...bookingDetails, name: e.target.value })}
+          value={venueDetails.name}
+          onChange={(e) => setVenueDetails({ ...venueDetails, name: e.target.value })}
           className="border border-gray-300 rounded-md py-2 px-3 w-full"
         />
       </div>
@@ -111,8 +115,8 @@ const CreateVenue = () => {
         <label htmlFor="description" className="block mb-2 text-sm font-semibold">Description:</label>
         <textarea
           id="description"
-          value={bookingDetails.description}
-          onChange={(e) => setBookingDetails({ ...bookingDetails, description: e.target.value })}
+          value={venueDetails.description}
+          onChange={(e) => setVenueDetails({ ...venueDetails, description: e.target.value })}
           className="border border-gray-300 rounded-md py-2 px-3 w-full h-32"
         />
       </div>
@@ -121,18 +125,18 @@ const CreateVenue = () => {
         <input
           type="number"
           id="maxGuests"
-          value={bookingDetails.maxGuests}
-          onChange={(e) => setBookingDetails({ ...bookingDetails, maxGuests: e.target.value })}
+          value={venueDetails.maxGuests}
+          onChange={(e) => setVenueDetails({ ...venueDetails, maxGuests: e.target.value })}
           className="border border-gray-300 rounded-md py-2 px-3 w-full"
         />
       </div>
       <div className="mb-6">
-        <label htmlFor="imageURL" className="block mb-2 text-sm font-semibold">Image Address:</label>
+        <label htmlFor="imageURL" className="block mb-2 text-sm font-semibold">Image URL:</label>
         <input
           type="text"
           id="imageURL"
-          value={bookingDetails.media.length > 0 ? bookingDetails.media[0].url : ""}
-          onChange={(e) => setBookingDetails({ ...bookingDetails, media: [{ ...bookingDetails.media[0], url: e.target.value }] })}
+          value={venueDetails.media.length > 0 ? venueDetails.media[0].url : ""}
+          onChange={(e) => setVenueDetails({ ...venueDetails, media: [{ ...venueDetails.media[0], url: e.target.value }] })}
           className="border border-gray-300 rounded-md py-2 px-3 w-full"
         />
       </div>
@@ -141,8 +145,8 @@ const CreateVenue = () => {
         <input
           type="text"
           id="altText"
-          value={bookingDetails.media.length > 0 ? bookingDetails.media[0].alt : ""}
-          onChange={(e) => setBookingDetails({ ...bookingDetails, media: [{ ...bookingDetails.media[0], alt: e.target.value }] })}
+          value={venueDetails.media.length > 0 ? venueDetails.media[0].alt : ""}
+          onChange={(e) => setVenueDetails({ ...venueDetails, media: [{ ...venueDetails.media[0], alt: e.target.value }] })}
           className="border border-gray-300 rounded-md py-2 px-3 w-full"
         />
       </div>
@@ -151,8 +155,8 @@ const CreateVenue = () => {
         <input
           type="text"
           id="address"
-          value={bookingDetails.location.address}
-          onChange={(e) => setBookingDetails({ ...bookingDetails, location: { ...bookingDetails.location, address: e.target.value } })}
+          value={venueDetails.location.address}
+          onChange={(e) => setVenueDetails({ ...venueDetails, location: { ...venueDetails.location, address: e.target.value } })}
           className="border border-gray-300 rounded-md py-2 px-3 w-full"
         />
       </div>
@@ -161,8 +165,8 @@ const CreateVenue = () => {
         <input
           type="text"
           id="city"
-          value={bookingDetails.location.city}
-          onChange={(e) => setBookingDetails({ ...bookingDetails, location: { ...bookingDetails.location, city: e.target.value } })}
+          value={venueDetails.location.city}
+          onChange={(e) => setVenueDetails({ ...venueDetails, location: { ...venueDetails.location, city: e.target.value } })}
           className="border border-gray-300 rounded-md py-2 px-3 w-full"
         />
       </div>
@@ -171,8 +175,8 @@ const CreateVenue = () => {
         <input
           type="text"
           id="zip"
-          value={bookingDetails.location.zip}
-          onChange={(e) => setBookingDetails({ ...bookingDetails, location: { ...bookingDetails.location, zip: e.target.value } })}
+          value={venueDetails.location.zip}
+          onChange={(e) => setVenueDetails({ ...venueDetails, location: { ...venueDetails.location, zip: e.target.value } })}
           className="border border-gray-300 rounded-md py-2 px-3 w-full"
         />
       </div>
@@ -181,8 +185,8 @@ const CreateVenue = () => {
         <input
           type="text"
           id="country"
-          value={bookingDetails.location.country}
-          onChange={(e) => setBookingDetails({ ...bookingDetails, location: { ...bookingDetails.location, country: e.target.value } })}
+          value={venueDetails.location.country}
+          onChange={(e) => setVenueDetails({ ...venueDetails, location: { ...venueDetails.location, country: e.target.value } })}
           className="border border-gray-300 rounded-md py-2 px-3 w-full"
         />
       </div>
@@ -191,8 +195,8 @@ const CreateVenue = () => {
         <input
           type="text"
           id="continent"
-          value={bookingDetails.location.continent}
-          onChange={(e) => setBookingDetails({ ...bookingDetails, location: { ...bookingDetails.location, continent: e.target.value } })}
+          value={venueDetails.location.continent}
+          onChange={(e) => setVenueDetails({ ...venueDetails, location: { ...venueDetails.location, continent: e.target.value } })}
           className="border border-gray-300 rounded-md py-2 px-3 w-full"
         />
       </div>
@@ -202,8 +206,8 @@ const CreateVenue = () => {
           <label className="mr-4 flex items-center">
             <input
               type="checkbox"
-              checked={bookingDetails.meta.wifi}
-              onChange={(e) => setBookingDetails({ ...bookingDetails, meta: { ...bookingDetails.meta, wifi: e.target.checked } })}
+              checked={venueDetails.meta.wifi}
+              onChange={(e) => setVenueDetails({ ...venueDetails, meta: { ...venueDetails.meta, wifi: e.target.checked } })}
               className="mr-2"
             />
             Wifi
@@ -211,8 +215,8 @@ const CreateVenue = () => {
           <label className="mr-4 flex items-center">
             <input
               type="checkbox"
-              checked={bookingDetails.meta.parking}
-              onChange={(e) => setBookingDetails({ ...bookingDetails, meta: { ...bookingDetails.meta, parking: e.target.checked } })}
+              checked={venueDetails.meta.parking}
+              onChange={(e) => setVenueDetails({ ...venueDetails, meta: { ...venueDetails.meta, parking: e.target.checked } })}
               className="mr-2"
             />
             Parking
@@ -220,8 +224,8 @@ const CreateVenue = () => {
           <label className="mr-4 flex items-center">
             <input
               type="checkbox"
-              checked={bookingDetails.meta.breakfast}
-              onChange={(e) => setBookingDetails({ ...bookingDetails, meta: { ...bookingDetails.meta, breakfast: e.target.checked } })}
+              checked={venueDetails.meta.breakfast}
+              onChange={(e) => setVenueDetails({ ...venueDetails, meta: { ...venueDetails.meta, breakfast: e.target.checked } })}
               className="mr-2"
             />
             Breakfast
@@ -229,20 +233,20 @@ const CreateVenue = () => {
           <label className="flex items-center">
             <input
               type="checkbox"
-              checked={bookingDetails.meta.pets}
-              onChange={(e) => setBookingDetails({ ...bookingDetails, meta: { ...bookingDetails.meta, pets: e.target.checked } })}
+              checked={venueDetails.meta.pets}
+              onChange={(e) => setVenueDetails({ ...venueDetails, meta: { ...venueDetails.meta, pets: e.target.checked } })}
               className="mr-2"
             />
             Pets Allowed
           </label>
         </div>
       </div>
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onClick={handleSubmit}>List Venue</button>
-      {bookingSuccess && (
-        <p className="text-green-600 font-semibold mt-4">Booking created successfully!</p>
+      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onClick={handleSubmit}>Update Venue</button>
+      {updateSuccess && (
+        <p className="text-green-600 font-semibold mt-4">Venue updated successfully!</p>
       )}
     </div>
   );
 };
 
-export default CreateVenue;
+export default UpdateVenue;

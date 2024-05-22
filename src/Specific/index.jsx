@@ -49,9 +49,12 @@ const VenueDetails = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    const apiKey = import.meta.env.VITE_API_KEY;
+    const accessToken = localStorage.getItem('accessToken'); 
+
     const bookingData = {
       dateFrom: selectedDate.toISOString(),
-      dateTo: selectedDate.toISOString(), // For simplicity, assuming same date for dateFrom and dateTo
+      dateTo: selectedDate.toISOString(),
       guests: guests,
       venueId: id
     };
@@ -59,7 +62,10 @@ const VenueDetails = () => {
     fetch("https://v2.api.noroff.dev/holidaze/bookings", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        'x-noroff-api-key': apiKey,
+        Authorization: `Bearer ${accessToken}`,
+
       },
       body: JSON.stringify(bookingData)
     })
@@ -86,6 +92,7 @@ const VenueDetails = () => {
         {venue.media.map((image, index) => (
           <img key={index} src={image.url} alt={`${venue.title}-image-${index}`} className="w-full h-auto mb-4 rounded-lg shadow-md" />
         ))}
+        {/* <p className="text-xl font-semibold mt-6 mb-4">{venue.title}</p> */}
         <p className="text-lg text-gray-800 mb-4">{venue.description}</p>
                           <div className="flex items-center">
                     {[...Array(5)].map((_, i) => (

@@ -1,44 +1,74 @@
 import { useState, useEffect } from "react";
-import CreateBooking from "../CreateBooking/index.jsx";
-import axios from "axios"; 
+import CreateVenue from "../CreateBooking/index";
+import axios from "axios";
 
 const Profile = () => {
   const [avatarUrl, setAvatarUrl] = useState(() => {
-    // Retrieve avatar URL from localStorage if it exists, otherwise use default
     return localStorage.getItem("avatarUrl") || "https://v2.api.noroff.dev/holidaze/profiles";
   });
 
-  const [imageUrlInput, setImageUrlInput] = useState(""); 
-  const [showCreateBooking, setShowCreateBooking] = useState(false); 
-  const [bookings, setBookings] = useState([]); 
+  const [imageUrlInput, setImageUrlInput] = useState("");
+  const [showCreateBooking, setShowCreateBooking] = useState(false);
+  const [bookings, setBookings] = useState([]);
+  const [venues, setVenues] = useState([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Save avatarUrl to localStorage whenever it changes
+    const accessToken = localStorage.getItem('accessToken');
+    setIsAuthenticated(!!accessToken);
+    if (!accessToken) {
+      return;
+    }
+
+    const fetchVenues = async () => {
+      try {
+        const response = await axios.get('https://v2.api.noroff.dev/holidaze/venues', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setVenues(response.data);
+      } catch (error) {
+        console.error("Error fetching venues:", error);
+      }
+    };
+
+    fetchVenues();
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem("avatarUrl", avatarUrl);
   }, [avatarUrl]);
 
   useEffect(() => {
-    const userBookings = [
-      // { id: 1, venue: "Venue 1", date: "2024-05-15" },
-      // { id: 2, venue: "Venue 2", date: "2024-05-18" },
-    ];
-    setBookings(userBookings);
+    // Assuming the booking status is stored in localStorage
+    const bookingStatus = localStorage.getItem('bookingStatus');
+    if (bookingStatus) {
+      setBookings(prevBookings => [...prevBookings, JSON.parse(bookingStatus)]);
+    }
   }, []);
 
   const handleAvatarChange = (event) => {
     const newAvatarUrl = event.target.value;
-    setImageUrlInput(newAvatarUrl); 
+    setImageUrlInput(newAvatarUrl);
   };
 
   const handleImageUrlSubmit = () => {
     if (imageUrlInput.trim() !== "") {
-      // Update avatarUrl only if input is not empty
       setAvatarUrl(imageUrlInput);
-      // Send a PUT request to update the profile with new avatar URL
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        console.error("User is not authenticated");
+        return;
+      }
       axios.put(`https://v2.api.noroff.dev/holidaze/profiles`, {
         avatar: {
           url: imageUrlInput,
           alt: "User Profile"
+        }
+      }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
         }
       })
       .then(response => {
@@ -50,26 +80,26 @@ const Profile = () => {
     }
   };
 
-  // Toggle showing/hiding the CreateVenue form
   const toggleCreateBooking = () => {
     setShowCreateBooking(!showCreateBooking);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("avatarUrl");
+    localStorage.removeItem('accessToken');
     window.location.href = "/login";
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
       <div className="w-full rounded-lg overflow-hidden">
-        <div className="px-5 py-4 flex flex-col items-center"> 
+        <div className="px-5 py-4 flex flex-col items-center">
           <img
-            className="w-24 h-24 rounded-full mb-4 bg-black" 
+            className="w-24 h-24 rounded-full mb-4 bg-black"
             src={avatarUrl}
             alt="User Profile"
           />
-          <h1 className="text-xl font-bold text-white mb-2">Hoisky</h1> 
+          <h1 className="text-xl font-bold text-white mb-2">Hoisky</h1>
           <p className="text-gray-400">Front-End Developer</p>
           <div className="mt-4">
             <h2 className="text-lg font-semibold mb-2 text-white">
@@ -81,37 +111,46 @@ const Profile = () => {
               convallis.
             </p>
           </div>
-          <div className="mt-4">
-            <h2 className="text-lg font-semibold mb-2 text-white">
-              Change Avatar (Image Address)
-            </h2>
-            <input
-              type="text"
-              className="w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
-              placeholder="Enter Image URL"
-              value={imageUrlInput}
-              onChange={handleAvatarChange}
-            />
-            <button 
-              onClick={handleImageUrlSubmit} 
-              className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
-            >
-              Save
-            </button>
-          </div>
-          {/* Add Create Booking button */}
+          {isAuthenticated && (
+            <>
+              <div className="mt-4">
+                <h2 className="text-lg font-semibold mb-2 text-white">
+                  Change Avatar (Image Address)
+                </h2>
+                <input
+                  type="text"
+                  className="w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
+                  placeholder="Enter Image Address"
+                  value={imageUrlInput}
+                  onChange={handleAvatarChange}
+                />
+                <button
+                  onClick={handleImageUrlSubmit}
+                  className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
+                >
+                  Save
+                </button>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="bg-red text-white mt-6 px-4 py-2 rounded-md hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105"
+              >
+                Logout
+              </button>
+            </>
+          )}
           <div className="flex justify-end mb-4">
             <button onClick={toggleCreateBooking} className="bg-blue-500 text-white mt-6 px-4 py-2 rounded-md hover:bg-blue-600">List New Venue</button>
           </div>
-          {showCreateBooking && <CreateBooking />} 
+          {showCreateBooking && <CreateVenue />}
           <div className="mt-4">
             <h2 className="text-lg font-semibold mb-2 text-white">
               Upcoming Bookings
             </h2>
             {bookings.length > 0 ? (
               <ul className="text-gray-400">
-                {bookings.map(booking => (
-                  <li key={booking.id}>
+                {bookings.map((booking, index) => (
+                  <li key={index}>
                     <strong>{booking.venue}</strong> - {booking.date}
                   </li>
                 ))}
@@ -120,13 +159,22 @@ const Profile = () => {
               <p>No upcoming bookings.</p>
             )}
           </div>
-          {/* Logout button */}
-          <button 
-            onClick={handleLogout} 
-            className="bg-red text-white mt-6 px-4 py-2 rounded-md hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105"
-          >
-            Logout
-          </button>
+          <div className="mt-4">
+            <h2 className="text-lg font-semibold mb-2 text-white">
+              My Venues
+            </h2>
+            {venues.length > 0 ? (
+              <ul className="text-gray-400">
+                {venues.map(venue => (
+                  <li key={venue.id}>
+                    <strong>{venue.name}</strong> - {venue.location.city}, {venue.location.country}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No venues listed.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
