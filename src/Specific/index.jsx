@@ -7,7 +7,7 @@ import { FaMapMarkerAlt, FaCity, FaGlobe, FaUserFriends, FaWifi, FaParking, FaCo
 const VenueDetails = () => {
   const { id } = useParams();
   const [venue, setVenue] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date()); 
+  const [selectedDates, setSelectedDates] = useState([]);
   const [availableDates, setAvailableDates] = useState([]);
   const [guests, setGuests] = useState(0);
   const [bookingStatus, setBookingStatus] = useState(null);
@@ -27,7 +27,7 @@ const VenueDetails = () => {
   }, [id]);
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
+    setSelectedDates(date);
   };
 
   const isDateAvailable = (date) => {
@@ -48,24 +48,26 @@ const VenueDetails = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
+  
     const apiKey = import.meta.env.VITE_API_KEY;
-    const accessToken = localStorage.getItem('accessToken'); 
-
+    const accessToken = localStorage.getItem('accessToken');
+  
+    const firstDate = selectedDates[0]; // First date in the selected range
+    const lastDate = selectedDates[selectedDates.length - 1]; // Last date in the selected range
+  
     const bookingData = {
-      dateFrom: selectedDate.toISOString(),
-      dateTo: selectedDate.toISOString(),
+      dateFrom: firstDate.toISOString(), // Set dateFrom to the first date
+      dateTo: lastDate.toISOString(), // Set dateTo to the last date
       guests: guests,
       venueId: id
     };
-
+  
     fetch("https://v2.api.noroff.dev/holidaze/bookings", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         'x-noroff-api-key': apiKey,
         Authorization: `Bearer ${accessToken}`,
-
       },
       body: JSON.stringify(bookingData)
     })
@@ -92,33 +94,32 @@ const VenueDetails = () => {
         {venue.media.map((image, index) => (
           <img key={index} src={image.url} alt={`${venue.title}-image-${index}`} className="w-full h-auto mb-4 rounded-lg shadow-md" />
         ))}
-        {/* <p className="text-xl font-semibold mt-6 mb-4">{venue.title}</p> */}
         <p className="text-lg text-gray-800 mb-4">{venue.description}</p>
-                          <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill={
-                          i < venue.rating
-                            ? "#FFD700"
-                            : "none"
-                        }
-                        className={`w-6 h-6 ${
-                          i < venue.rating
-                            ? "text-yellow-500"
-                            : "text-gray-300"
-                        }`}
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 1.638l1.482 4.537h4.796l-3.878 2.821 1.482 4.538-3.879-2.823-3.878 2.823 1.482-4.538-3.878-2.82h4.795z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    ))}
-                  </div>
+        <div className="flex items-center">
+          {[...Array(5)].map((_, i) => (
+            <svg
+              key={i}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill={
+                i < venue.rating
+                  ? "#FFD700"
+                  : "none"
+              }
+              className={`w-6 h-6 ${
+                i < venue.rating
+                  ? "text-yellow-500"
+                  : "text-gray-300"
+              }`}
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 1.638l1.482 4.537h4.796l-3.878 2.821 1.482 4.538-3.879-2.823-3.878 2.823 1.482-4.538-3.878-2.82h4.795z"
+                clipRule="evenodd"
+              />
+            </svg>
+          ))}
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <div className="mb-4">
             <div className="flex items-center mb-2 text-gray-600">
@@ -157,44 +158,46 @@ const VenueDetails = () => {
             </div>
           </div>
         </div>
-        {/* Calendar */}
-        <div className="text-center">
-          <h2 className="text-lg font-semibold mb-2">Available Dates:</h2>
-          <Calendar 
-            value={selectedDate} 
-            onChange={handleDateChange} 
-            className="mx-auto rounded-lg shadow-md text-black w-full sm:w-96"
-            tileClassName={({date}) => isDateAvailable(date) ? "bg-green-200 text-black" : "bg-red-200 text-black"}
-          />
-        </div>
-        {/* Booking form */}
-        <form onSubmit={handleSubmit} className="mt-6">
-          <div className="mb-4">
-            <label htmlFor="guests" className="block text-sm font-medium text-gray-700">
-              Number of Guests (Max: {venue.maxGuests}):
-            </label>
-            <input 
-              type="number" 
-              id="guests" 
-              name="guests" 
-              value={guests} 
-              onChange={handleGuestsChange} 
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
-            />
-          </div>
-          <button 
-            type="submit" 
-            className="inline-flex items-center bg-blue text-white py-2 rounded-md hover:bg-darkblue"
-          >
-            Book Now
-          </button>
-        </form>
-        {/* Booking status */}
-        {bookingStatus === "success" && <p className="text-green-500 mt-4">Booking successful!</p>}
-        {bookingStatus === "error" && <p className="text-red-500 mt-4">Error creating booking. Please try again later.</p>}
       </div>
-    </div>
-  );
-}
-
-export default VenueDetails;
+      {/* Calendar */}
+      <div className="text-center">
+        <h2 className="text-lg font-semibold mb-2">Available Dates:</h2>
+        <Calendar 
+          selectRange
+          value={selectedDates}
+          onChange={handleDateChange} 
+          className="mx-auto rounded-lg shadow-md text-black w-full sm:w-96"
+          tileClassName={({date}) => isDateAvailable(date) ? "bg-green-200 text-black" : "bg-red-200 text-black"}
+          />
+          </div>
+          {/* Booking form */}
+          <form onSubmit={handleSubmit} className="mt-6">
+            <div className="mb-4">
+              <label htmlFor="guests" className="block text-sm font-medium text-gray-700">
+                Number of Guests (Max: {venue.maxGuests}):
+              </label>
+              <input 
+                type="number" 
+                id="guests" 
+                name="guests" 
+                value={guests} 
+                onChange={handleGuestsChange} 
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+              />
+            </div>
+            <button 
+              type="submit" 
+              className="inline-flex items-center bg-blue text-white py-2 rounded-md hover:bg-darkblue"
+            >
+              Book Now
+            </button>
+          </form>
+          {/* Booking status */}
+          {bookingStatus === "success" && <p className="text-green-500 mt-4">Booking successful!</p>}
+          {bookingStatus === "error" && <p className="text-red-500 mt-4">Error creating booking. Please try again later.</p>}
+        </div>
+      );
+    }
+    
+    export default VenueDetails;
+    
