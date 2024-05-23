@@ -9,6 +9,7 @@ const VenueDetails = () => {
   const [venue, setVenue] = useState(null);
   const [selectedDates, setSelectedDates] = useState([]);
   const [availableDates, setAvailableDates] = useState([]);
+  // const [unavailableDates, setUnavailableDates] = useState([]); 
   const [guests, setGuests] = useState(0);
   const [bookingStatus, setBookingStatus] = useState(null);
 
@@ -35,6 +36,12 @@ const VenueDetails = () => {
       return new Date(availableDate).toDateString() === date.toDateString();
     });
   };
+
+  // const isDateUnavailable = (date) => {
+  //   return unavailableDates.some((unavailableDate) => {
+  //     return new Date(unavailableDate).toDateString() === date.toDateString();
+  //   });
+  // };
 
   const handleGuestsChange = (event) => {
     const numGuests = parseInt(event.target.value);

@@ -15,6 +15,7 @@ export default {
             blue: "#2A6BEA",
             grey: "#515052",
             darkgrey: "#333138",
+            green: "#2ECC71",
         },
         extend: {
             colors: {
