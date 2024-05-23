@@ -108,9 +108,6 @@ const Profile = () => {
       if (data.avatar) {
         localStorage.setItem("avatarUrl", data.avatar.url);
       }
-      if (data.bio) {
-        localStorage.setItem("bio", data.bio);
-      }
       if (data.banner) {
         localStorage.setItem("bannerUrl", data.banner.url);
       }
@@ -130,7 +127,6 @@ const Profile = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("avatarUrl");
-    localStorage.removeItem("bio");
     localStorage.removeItem("bannerUrl");
     localStorage.removeItem('accessToken');
     window.location.href = "/login";
