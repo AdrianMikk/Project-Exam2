@@ -4,7 +4,6 @@ import CreateVenue from "../CreateBooking/index";
 const Profile = () => {
   const [name] = useState("name");
   const [avatarUrl, setAvatarUrl] = useState(localStorage.getItem("avatarUrl") || "");
-  const [bio, setBio] = useState(localStorage.getItem("bio") || "");
   const [bannerUrl, setBannerUrl] = useState(localStorage.getItem("bannerUrl") || "");
   const [imageUrlInput, setImageUrlInput] = useState("");
   const [bannerUrlInput, setBannerUrlInput] = useState("");
@@ -13,6 +12,9 @@ const Profile = () => {
   const [venues, setVenues] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [apiKey, setApiKey] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -35,12 +37,15 @@ const Profile = () => {
         const data = await response.json();
         console.log("Profile data fetched:", data);
         if (data) {
-          setAvatarUrl(data.avatar.url);
-          setBio(data.bio || "");
+          setAvatarUrl(data.avatar?.url || "");
           setVenues(data.venues || []);
           setBookings(data.bookings || []);
-          localStorage.setItem("avatarUrl", data.avatar.url);
-          localStorage.setItem("bio", data.bio || "");
+          if (data.avatar?.url) {
+            localStorage.setItem("avatarUrl", data.avatar.url);
+          }
+          if (data.banner?.url) {
+            localStorage.setItem("bannerUrl", data.banner.url);
+          }
         }
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -53,10 +58,6 @@ const Profile = () => {
   useEffect(() => {
     localStorage.setItem("avatarUrl", avatarUrl);
   }, [avatarUrl]);
-
-  useEffect(() => {
-    localStorage.setItem("bio", bio);
-  }, [bio]);
 
   useEffect(() => {
     localStorage.setItem("bannerUrl", bannerUrl);
@@ -72,11 +73,6 @@ const Profile = () => {
     setBannerUrlInput(newBannerUrl);
   };
 
-  const handleBioChange = (event) => {
-    const newBio = event.target.value;
-    setBio(newBio);
-  };
-
   const handleImageUrlSubmit = () => {
     if (imageUrlInput.trim() !== "") {
       setAvatarUrl(imageUrlInput);
@@ -90,11 +86,7 @@ const Profile = () => {
       updateProfile({ banner: { url: bannerUrlInput } });
     }
   };
-
-  const handleBioSubmit = () => {
-    updateProfile({ bio });
-  };
-
+  
   const updateProfile = (updatedData) => {
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
@@ -113,18 +105,22 @@ const Profile = () => {
     .then(response => response.json())
     .then(data => {
       console.log("Profile updated successfully:", data);
-      if (updatedData.avatar) {
-        localStorage.setItem("avatarUrl", updatedData.avatar.url);
+      if (data.avatar) {
+        localStorage.setItem("avatarUrl", data.avatar.url);
       }
-      if (updatedData.bio) {
-        localStorage.setItem("bio", updatedData.bio);
+      if (data.bio) {
+        localStorage.setItem("bio", data.bio);
       }
-      if (updatedData.banner) {
-        localStorage.setItem("bannerUrl", updatedData.banner.url);
+      if (data.banner) {
+        localStorage.setItem("bannerUrl", data.banner.url);
       }
+      setSuccessMessage("Profile updated successfully.");
+      setErrorMessage("");
     })
     .catch(error => {
       console.error("Error updating profile:", error);
+      setErrorMessage("Error updating profile. Please try again.");
+      setSuccessMessage("");
     });
   };
 
@@ -138,6 +134,10 @@ const Profile = () => {
     localStorage.removeItem("bannerUrl");
     localStorage.removeItem('accessToken');
     window.location.href = "/login";
+  };
+
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
   };
 
   return (
@@ -159,59 +159,62 @@ const Profile = () => {
         </div>
         <div className="px-5 py-4 flex flex-col items-center">
           <h1 className="text-xl font-bold text-white mt-12 mb-2">{name}</h1>
-          <div className="mt-4">
-            <h2 className="text-lg font-semibold mb-2 text-white">
-              About Me
-            </h2>
-            <textarea
-              className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
-              placeholder="Enter Bio"
-              value={bio}
-              onChange={handleBioChange}
-            />
-            <button
-              onClick={handleBioSubmit}
-              className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
-            >
-              Save Bio
-            </button>
-          </div>
-          <div className="mt-4">
-            <h2 className="text-lg font-semibold mb-2 text-white">
-              Change Avatar (Image Address)
-            </h2>
-            <input
-              type="text"
-              className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
-              placeholder="Enter Image Address"
-              value={imageUrlInput}
-              onChange={handleAvatarChange}
-            />
-            <button
-              onClick={handleImageUrlSubmit}
-              className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
-            >
-              Save Avatar
-            </button>
-          </div>
-          <div className="mt-4">
-            <h2 className="text-lg font-semibold mb-2 text-white">
-              Change Banner (Image Address)
-            </h2>
-            <input
-              type="text"
-              className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
-              placeholder="Enter Banner Image Address"
-              value={bannerUrlInput}
-              onChange={handleBannerChange}
-            />
-            <button
-              onClick={handleBannerUrlSubmit}
-              className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
-            >
-              Save Banner
-            </button>
-          </div>
+          <button
+            onClick={toggleEdit}
+            className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
+          >
+            {isEditing ? "Close" : "Edit Profile"}
+          </button>
+          {isEditing && (
+            <>
+              <div className="mt-4">
+                <h2 className="text-lg font-semibold mb-2 text-white">
+                  Change Avatar (Image Address)
+                </h2>
+                <input
+                  type="text"
+                  className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
+                  placeholder="Enter Image Address"
+                  value={imageUrlInput}
+                  onChange={handleAvatarChange}
+                />
+                <button
+                  onClick={handleImageUrlSubmit}
+                  className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
+                >
+                  Save Avatar
+                </button>
+              </div>
+              <div className="mt-4">
+                <h2 className="text-lg font-semibold mb-2 text-white">
+                  Change Banner (Image Address)
+                </h2>
+                <input
+                  type="text"
+                  className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
+                  placeholder="Enter Banner Image Address"
+                  value={bannerUrlInput}
+                  onChange={handleBannerChange}
+                />
+                <button
+                  onClick={handleBannerUrlSubmit}
+                  className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
+                >
+                  Save Banner
+                </button>
+              </div>
+            </>
+          )}
+          {successMessage && (
+            <div className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md">
+              {successMessage}
+            </div>
+          )}
+          {errorMessage && (
+            <div className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md">
+              {errorMessage}
+            </div>
+          )}
           {isAuthenticated && (
             <>
               <button
