@@ -1,6 +1,7 @@
 # Project Exam 2 - Holidaze
 
-# BILDE 
+![holidaze](https://github.com/AdrianMikk/Project-Exam2/assets/113434165/23199dce-7739-4203-a5f0-3e82b696a3d8)
+
 # NETLIFY LINK
 
 # Goal
