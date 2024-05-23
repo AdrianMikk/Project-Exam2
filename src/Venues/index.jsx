@@ -86,10 +86,13 @@ function Venues() {
                 />
               )}
               <div>
-                <h4 className="text-2xl font-semibold mb-2 text-white">
-                  {venue.title}
-                </h4>
-                <p className="text-white">{venue.description}</p>
+              <h4 className="text-2xl font-semibold mb-2 text-white">
+  {venue.title && venue.title.length > 30 ? venue.title.substring(0, 40) + "..." : venue.title}
+</h4>
+<p className="text-white">
+  {venue.description && venue.description.length > 40 ? venue.description.substring(0, 40) + "..." : venue.description}
+</p>
+
                 <div className="flex justify-between items-center mt-4">
                   <p className="text-xl font-semibold text-white">
                     Price: £{venue.price}
