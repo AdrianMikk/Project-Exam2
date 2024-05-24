@@ -58,7 +58,7 @@ function ContactForm() {
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
+                  className="w-full lg:w-96 py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
                   minLength={3}
                   required
                 />
@@ -71,7 +71,7 @@ function ContactForm() {
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
+                  className="w-full lg:w-96 py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
                   minLength={3}
                   required
                 />
@@ -84,7 +84,7 @@ function ContactForm() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
+                  className="w-full lg:w-96 py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
                   required
                 />
               </div>
@@ -95,7 +95,7 @@ function ContactForm() {
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
+                  className="w-full lg:w-96 py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
                   minLength={3}
                   required
                 />
@@ -110,6 +110,3 @@ function ContactForm() {
 }
 
 export default ContactForm;
-
-
-

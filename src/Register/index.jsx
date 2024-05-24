@@ -71,7 +71,7 @@ const Register = () => {
             <input
               type="text"
               id="name"
-              className="w-full px-4 py-2 border rounded-md bg-gray-700 focus:outline-none focus:border-blue-500"
+              className="w-full lg:w-96 px-4 py-2 border rounded-md bg-gray-700 focus:outline-none focus:border-blue-500"
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -83,7 +83,7 @@ const Register = () => {
             <input
               type="email"
               id="email"
-              className="w-full px-4 py-2 border rounded-md bg-gray-700 focus:outline-none focus:border-blue-500"
+              className="w-full lg:w-96 px-4 py-2 border rounded-md bg-gray-700 focus:outline-none focus:border-blue-500"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -95,7 +95,7 @@ const Register = () => {
             <input
               type="password"
               id="password"
-              className="w-full px-4 py-2 border rounded-md bg-gray-700 focus:outline-none focus:border-blue-500"
+              className="w-full lg:w-96 px-4 py-2 border rounded-md bg-gray-700 focus:outline-none focus:border-blue-500"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -107,7 +107,7 @@ const Register = () => {
             <input
               type="password"
               id="confirmPassword"
-              className="w-full px-4 py-2 border rounded-md bg-gray-700 focus:outline-none focus:border-blue-500"
+              className="w-full lg:w-96 px-4 py-2 border rounded-md bg-gray-700 focus:outline-none focus:border-blue-500"
               placeholder="Confirm your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

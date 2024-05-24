@@ -40,8 +40,8 @@ const Login = () => {
         localStorage.setItem('user', JSON.stringify(data));
         console.log('Is Registered:', data.data.isRegistered); 
         // Check if user is registered
-          navigate('/venues');
-          setError('You need to be registered.');
+        navigate('/venues');
+        setError('You need to be registered.');
       } else {
         setError('Invalid email or password');
       }
@@ -69,7 +69,7 @@ const Login = () => {
             <input
               type="email"
               id="email"
-              className={`w-full px-4 py-2 border rounded-md ${
+              className={`w-full lg:w-96 px-4 py-2 border rounded-md ${
                 email.endsWith('@stud.noroff.no') ? 'bg-gray-700' : 'bg-red-500'
               } focus:outline-none focus:border-blue-500`}
               placeholder="Enter your email"
@@ -85,7 +85,7 @@ const Login = () => {
             <input
               type="password"
               id="password"
-              className="w-full px-4 py-2 border rounded-md bg-gray-700 focus:outline-none focus:border-blue-500"
+              className="w-full lg:w-96 px-4 py-2 border rounded-md bg-gray-700 focus:outline-none focus:border-blue-500"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import CreateVenue from "../CreateBooking/index";
+import { useParams } from "react-router-dom";
+import UpcomingBookings from "../UpcomingBookings/index";
 
 const Profile = () => {
-  const [name] = useState("name");
+  const { name } = useParams();
   const [avatarUrl, setAvatarUrl] = useState(localStorage.getItem("avatarUrl") || "");
   const [bannerUrl, setBannerUrl] = useState(localStorage.getItem("bannerUrl") || "");
   const [imageUrlInput, setImageUrlInput] = useState("");
@@ -21,16 +23,20 @@ const Profile = () => {
     setIsAuthenticated(!!accessToken);
     const apiKey = import.meta.env.VITE_API_KEY;
     setApiKey(apiKey);
-    if (!accessToken) {
-      return;
-    }
+
+    if (!accessToken) return;
 
     const fetchProfileData = async () => {
+      const user = localStorage.getItem('user');
+      const userObject = JSON.parse(user);
+      const userName = userObject.data.name;
+      console.log("User:", userName);
+
       try {
-        const response = await fetch(`https://v2.api.noroff.dev/holidaze/profiles/ole1234567?_venues=true&_bookings=true`, {
+        const response = await fetch(`https://v2.api.noroff.dev/holidaze/profiles/${userName}?_venues=true&_bookings=true`, {
           headers: {
             'Content-Type': 'application/json',
-            'x-noroff-api-key': apiKey,
+            'X-Noroff-api-key': apiKey,
             Authorization: `Bearer ${accessToken}`,
           },
         });
@@ -38,8 +44,8 @@ const Profile = () => {
         console.log("Profile data fetched:", data);
         if (data) {
           setAvatarUrl(data.avatar?.url || "");
-          setVenues(data.venues || []);
-          setBookings(data.bookings || []);
+          setVenues(data.data.venues || []);
+          setBookings(data.data.bookings || []);
           if (data.avatar?.url) {
             localStorage.setItem("avatarUrl", data.avatar.url);
           }
@@ -53,8 +59,11 @@ const Profile = () => {
     };
 
     fetchProfileData();
-  }, [apiKey]);
+  }, [apiKey, name]);
+  console.log("Venues:", venues);
+  console.log("Bookings:", bookings);
 
+  // Synchronize avatarUrl and bannerUrl with localStorage
   useEffect(() => {
     localStorage.setItem("avatarUrl", avatarUrl);
   }, [avatarUrl]);
@@ -63,6 +72,7 @@ const Profile = () => {
     localStorage.setItem("bannerUrl", bannerUrl);
   }, [bannerUrl]);
 
+  // Handling changes and submissions for avatar and banner URLs
   const handleAvatarChange = (event) => {
     const newAvatarUrl = event.target.value;
     setImageUrlInput(newAvatarUrl);
@@ -86,14 +96,15 @@ const Profile = () => {
       updateProfile({ banner: { url: bannerUrlInput } });
     }
   };
-  
+
+  // Function to update profile
   const updateProfile = (updatedData) => {
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
       console.error("User is not authenticated");
       return;
     }
-    fetch(`https://v2.api.noroff.dev/holidaze/profiles/ole1234567`, {
+    fetch(`https://v2.api.noroff.dev/holidaze/profiles/${name}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -121,10 +132,12 @@ const Profile = () => {
     });
   };
 
+  // Function to toggle the visibility of the CreateBooking component
   const toggleCreateBooking = () => {
     setShowCreateBooking(!showCreateBooking);
   };
 
+  // Function to handle logout
   const handleLogout = () => {
     localStorage.removeItem("avatarUrl");
     localStorage.removeItem("bannerUrl");
@@ -132,6 +145,7 @@ const Profile = () => {
     window.location.href = "/login";
   };
 
+  // Function to toggle edit mode
   const toggleEdit = () => {
     setIsEditing(!isEditing);
   };
@@ -176,91 +190,84 @@ const Profile = () => {
                 />
                 <button
                   onClick={handleImageUrlSubmit}
-                  className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
-                >
-                  Save Avatar
-                </button>
+                  className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover :bg-blue-600"
+                  >
+                    Save Avatar
+                  </button>
+                </div>
+                <div className="mt-4">
+                  <h2 className="text-lg font-semibold mb-2 text-white">
+                    Change Banner (Image Address)
+                  </h2>
+                  <input
+                    type="text"
+                    className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
+                    placeholder="Enter Banner Image Address"
+                    value={bannerUrlInput}
+                    onChange={handleBannerChange}
+                  />
+                  <button
+                    onClick={handleBannerUrlSubmit}
+                    className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
+                  >
+                    Save Banner
+                  </button>
+                </div>
+              </>
+            )}
+            {successMessage && (
+              <div className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md">
+                {successMessage}
               </div>
-              <div className="mt-4">
-                <h2 className="text-lg font-semibold mb-2 text-white">
-                  Change Banner (Image Address)
-                </h2>
-                <input
-                  type="text"
-                  className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
-                  placeholder="Enter Banner Image Address"
-                  value={bannerUrlInput}
-                  onChange={handleBannerChange}
-                />
+            )}
+            {errorMessage && (
+              <div className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md">
+                {errorMessage}
+              </div>
+            )}
+            {isAuthenticated && (
+              <>
                 <button
-                  onClick={handleBannerUrlSubmit}
-                  className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
+                  onClick={handleLogout}
+                  className="bg-red text-white mt-6 px-4 py-2 rounded-md hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105"
                 >
-                  Save Banner
+                  Logout
                 </button>
-              </div>
-            </>
-          )}
-          {successMessage && (
-            <div className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md">
-              {successMessage}
-            </div>
-          )}
-          {errorMessage && (
-            <div className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md">
-              {errorMessage}
-            </div>
-          )}
-          {isAuthenticated && (
-            <>
-              <button
-                onClick={handleLogout}
-                className="bg-red text-white mt-6 px-4 py-2 rounded-md hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105"
-              >
-                Logout
-              </button>
-            </>
-          )}
-          <div className="flex justify-end mb-4">
-            <button onClick={toggleCreateBooking} className="bg-blue-500 text-white mt-6 px-4 py-2 rounded-md hover:bg-blue-600">List New Venue</button>
-          </div>
-          {showCreateBooking && <CreateVenue />}
-          <div className="mt-4">
-            <h2 className="text-lg font-semibold mb-2 text-white">
-              Upcoming Bookings
-            </h2>
-            {bookings && bookings.length > 0 ? (
-              <ul className="text-gray-400">
-                {bookings.map((booking, index) => (
-                  <li key={index}>
-                    <strong>{booking.venue}</strong> - {booking.date}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-400">No upcoming bookings.</p>
+              </>
             )}
+            <div className="flex justify-end mb-4">
+              <button onClick={toggleCreateBooking} className="bg-blue-500 text-white mt-6 px-4 py-2 rounded-md hover:bg-blue-600">List New Venue</button>
+            </div>
+            {showCreateBooking && <CreateVenue />}
+            {UpcomingBookings(bookings)}
+            <div className="mt-8">
+  <h2 className="text-xl font-semibold mb-4 text-white">My Venues</h2>
+  {venues && venues.length > 0 ? (
+    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {venues.map(venue => (
+        <li key={venue.id} className="flex items-center bg-gray-800 rounded-lg p-4">
+          <img
+            src={venue.media[0].url} 
+            alt={venue.name} 
+            className="w-16 h-16 object-cover rounded-lg mr-4"
+          />
+          <div>
+            <a href={`/venues/${venue.id}`} className="text-lg font-semibold text-blue-400 hover:underline">{venue.name}</a>
+            <p className="text-gray-300">{venue.location.city}, {venue.location.country}</p>
           </div>
-          <div className="mt-4">
-            <h2 className="text-lg font-semibold mb-2 text-white">
-              My Venues
-            </h2>
-            {venues && venues.length > 0 ? (
-              <ul className="text-gray-400">
-                {venues.map(venue => (
-                  <li key={venue.id}>
-                    <strong>{venue.name}</strong> - {venue.location.city}, {venue.location.country}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-400">No venues listed.</p>
-            )}
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p className="text-gray-400 mt-2">No venues listed.</p>
+  )}
+</div>
+
           </div>
         </div>
       </div>
-    </div>
-  );
-};
-
-export default Profile;
+    );
+  }  
+  
+  export default Profile;
+  
