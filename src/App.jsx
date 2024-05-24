@@ -5,16 +5,16 @@ import Layout from './Layout/layout.jsx';
 import Profile from './Profile/index.jsx';
 import ContactPage from './Contact/index.jsx';
 import VenueDetails from './Specific/index.jsx';
-import Register from './Register/index.jsx'; 
+import Register from './Register/index.jsx';
 import Login from './Login/index.jsx'; 
 
 function App() {
   return (
-    // <VenueManagerProvider>
       <Router>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route path="venues" index element={<HomePage />} />
+            <Route index element={<HomePage />} />  
+            <Route path="venues" element={<HomePage />} />  
             <Route path="profile" element={<Profile />} />
             <Route path="contact" element={<ContactPage />} />   
             <Route path="venues/:id" element={<VenueDetails />} />
@@ -23,7 +23,6 @@ function App() {
           </Route>
         </Routes>
       </Router>
-    // </VenueManagerProvider>
   );
 }
 
