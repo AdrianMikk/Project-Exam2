@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// import { VenueManagerProvider } from './Context/index.jsx';
 import './App.css';
 import HomePage from './Home/index.jsx';
 import Layout from './Layout/layout.jsx';

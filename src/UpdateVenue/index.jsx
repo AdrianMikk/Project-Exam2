@@ -250,3 +250,68 @@ const UpdateVenue = () => {
 };
 
 export default UpdateVenue;
+
+// import { useEffect, useState } from 'react';
+// import { useParams } from 'react-router-dom';
+
+// const UpdateVenue = () => {
+//   const { id } = useParams();
+//   const [venue, setVenue] = useState(null);
+
+//   useEffect(() => {
+//     // Fetch the venue data based on the ID
+//     const fetchVenue = async () => {
+//       const apiKey = import.meta.env.VITE_API_KEY;
+//       const response = await fetch(`https://v2.api.noroff.dev/holidaze/venues/${id}`, {
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'X-Noroff-api-key': apiKey
+//         }
+//       });
+//       const data = await response.json();
+//       setVenue(data);
+//     };
+    
+//     fetchVenue();
+//   }, [id]);
+
+//   const handleSubmit = async (event) => {
+//     event.preventDefault();
+//     const apiKey = import.meta.env.VITE_API_KEY;
+//     const accessToken = localStorage.getItem('accessToken');
+//     // Handle form submission and update venue
+//     const response = await fetch(`https://v2.api.noroff.dev/holidaze/venues/${id}`, {
+//       method: 'PUT',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'X-Noroff-api-key': apiKey,
+//         Authorization: `Bearer ${accessToken}`
+//       },
+//       body: JSON.stringify(venue) // Make sure to format the data appropriately
+//     });
+//     const data = await response.json();
+//     console.log("Venue updated:", data);
+//   };
+
+//   if (!venue) {
+//     return <div>Loading...</div>;
+//   }
+
+//   return (
+//     <form onSubmit={handleSubmit}>
+//       <h1>Edit Venue</h1>
+//       <div>
+//         <label>Name:</label>
+//         <input
+//           type="text"
+//           value={venue.name}
+//           onChange={(e) => setVenue({ ...venue, name: e.target.value })}
+//         />
+//       </div>
+//       {/* Add other fields as necessary */}
+//       <button type="submit">Save Changes</button>
+//     </form>
+//   );
+// };
+
+// export default UpdateVenue;
