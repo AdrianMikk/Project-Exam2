@@ -65,6 +65,8 @@ To get all the dependencies for the project, run:
 - Noroff Content
 - ChatGPT
 - Classmates via discord
+- Tailwindcss.com
+- Stackoverflow.com
 
 # Acknowledgments 
 
