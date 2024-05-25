@@ -33,7 +33,6 @@ const CreateVenue = () => {
     event.preventDefault();
 
     const apiKey = import.meta.env.VITE_API_KEY;
-    // const accessToken = import.meta.env.VITE_TOKEN_KEY;
     const accessToken = localStorage.getItem('accessToken'); 
 
     console.log('apiKey:', apiKey);

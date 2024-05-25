@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import CreateVenue from "../CreateBooking/index";
 import { useParams } from "react-router-dom";
 import UpcomingBookings from "../UpcomingBookings/index";
+import UpdateVenue from "../UpdateVenue";
 
 const Profile = () => {
   const { name } = useParams();
@@ -10,6 +11,7 @@ const Profile = () => {
   const [imageUrlInput, setImageUrlInput] = useState("");
   const [bannerUrlInput, setBannerUrlInput] = useState("");
   const [showCreateBooking, setShowCreateBooking] = useState(false);
+  const [editingVenueId, setEditingVenueId] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [venues, setVenues] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -17,6 +19,8 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showEditVenue, setShowEditVenue] = useState(false);
+
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -137,6 +141,14 @@ const Profile = () => {
     setShowCreateBooking(!showCreateBooking);
   };
 
+  // const toggleEditVenue = () => {
+  //   setShowEditVenue (!showEditVenue);
+  // };
+
+  const toggleEditVenue = (venueId, venue) => {
+    setEditingVenueId(venueId === editingVenueId ? null : venueId);
+  };
+
   // Function to handle logout
   const handleLogout = () => {
     localStorage.removeItem("avatarUrl");
@@ -190,84 +202,95 @@ const Profile = () => {
                 />
                 <button
                   onClick={handleImageUrlSubmit}
-                  className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover :bg-blue-600"
-                  >
-                    Save Avatar
-                  </button>
-                </div>
-                <div className="mt-4">
-                  <h2 className="text-lg font-semibold mb-2 text-white">
-                    Change Banner (Image Address)
-                  </h2>
-                  <input
-                    type="text"
-                    className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
-                    placeholder="Enter Banner Image Address"
-                    value={bannerUrlInput}
-                    onChange={handleBannerChange}
-                  />
-                  <button
-                    onClick={handleBannerUrlSubmit}
-                    className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
-                  >
-                    Save Banner
-                  </button>
-                </div>
-              </>
-            )}
-            {successMessage && (
-              <div className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md">
-                {successMessage}
-              </div>
-            )}
-            {errorMessage && (
-              <div className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md">
-                {errorMessage}
-              </div>
-            )}
-            {isAuthenticated && (
-              <>
-                <button
-                  onClick={handleLogout}
-                  className="bg-red text-white mt-6 px-4 py-2 rounded-md hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105"
+                  className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
                 >
-                  Logout
+                  Save Avatar
                 </button>
-              </>
-            )}
-            <div className="flex justify-end mb-4">
-              <button onClick={toggleCreateBooking} className="bg-blue-500 text-white mt-6 px-4 py-2 rounded-md hover:bg-blue-600">List New Venue</button>
+              </div>
+              <div className="mt-4">
+                <h2 className="text-lg font-semibold mb-2 text-white">
+                  Change Banner (Image Address)
+                </h2>
+                <input
+                  type="text"
+                  className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
+                  placeholder="Enter Banner Image Address"
+                  value={bannerUrlInput}
+                  onChange={handleBannerChange}
+                />
+                <button
+                  onClick={handleBannerUrlSubmit}
+                  className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
+                >
+                  Save Banner
+                </button>
+              </div>
+            </>
+          )}
+          {successMessage && (
+            <div className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md">
+              {successMessage}
             </div>
-            {showCreateBooking && <CreateVenue />}
-            {UpcomingBookings(bookings)}
-            <div className="mt-8">
-  <h2 className="text-xl font-semibold mb-4 text-white">My Venues</h2>
-  {venues && venues.length > 0 ? (
-    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {venues.map(venue => (
-        <li key={venue.id} className="flex items-center bg-gray-800 rounded-lg p-4">
-          <img
-            src={venue.media[0].url} 
-            alt={venue.name} 
-            className="w-16 h-16 object-cover rounded-lg mr-4"
-          />
-          <div>
-            <a href={`/venues/${venue.id}`} className="text-lg font-semibold text-blue-400 hover:underline">{venue.name}</a>
-            <p className="text-gray-300">{venue.location.city}, {venue.location.country}</p>
+          )}
+          {errorMessage && (
+            <div className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md">
+              {errorMessage}
+            </div>
+          )}
+          {isAuthenticated && (
+            <>
+              <button
+                onClick={handleLogout}
+                className="bg-red text-white mt-6 px-4 py-2 rounded-md hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105"
+              >
+                Logout
+              </button>
+            </>
+          )}
+          <div className="flex justify-end mb-4">
+            <button onClick={toggleCreateBooking} className="bg-blue-500 text-white mt-6 px-4 py-2 rounded-md hover:bg-blue-600">List New Venue</button>
           </div>
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p className="text-gray-400 mt-2">No venues listed.</p>
-  )}
-</div>
+          {showCreateBooking && <CreateVenue />}
+          {UpcomingBookings(bookings)}
+          <div className="mt-8">
+            <h2 className="text-xl font-semibold mb-4 text-white">My Venues</h2>
+              <div className="grid grid-cols-1 gap-4">
+                {venues && venues.length > 0 ? (
+                  venues.map(venue => (
+                    <div key={venue.id}>
+                      <div className="flex items-center bg-gray-800 rounded-lg p-4">
+                        <img
+                          src={venue.media[0].url}
+                          alt={venue.name}
+                          className="w-16 h-16 object-cover rounded-lg mr-4"
+                        />
+                        <div>
+                          <a href={`/venues/${venue.id}`} className="text-lg font-semibold text-blue-400 hover:underline">
+                            {venue.name}
+                          </a>
+                          <p className="text-gray-300">{venue.location.city}, {venue.location.country}</p>
+                        </div>
+                        <button onClick={() => toggleEditVenue(venue.id)} className="bg-blue-500 text-white mt-6 px-4 py-2 rounded-md hover:bg-blue-600">
+                          Edit Venue
+                        </button>
+                      </div>
+                        <div className="mt-8 flex justify-center cols-span-2">
+                        {editingVenueId === venue.id && <UpdateVenue venueDetails={venue} />}
+                        </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400 mt-2">No venues listed.</p>
+                )}
+              </div>
+          </div>
 
-          </div>
+
+
         </div>
       </div>
-    );
-  }  
-  
-  export default Profile;
-  
+    </div>
+  );
+}  
+
+export default Profile;

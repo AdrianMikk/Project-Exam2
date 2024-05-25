@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css'; 
+import 'react-calendar/dist/Calendar.css';
 import { FaMapMarkerAlt, FaCity, FaGlobe, FaUserFriends, FaWifi, FaParking, FaCoffee, FaPaw } from "react-icons/fa";
 
 const VenueDetails = () => {
@@ -9,7 +9,6 @@ const VenueDetails = () => {
   const [venue, setVenue] = useState(null);
   const [selectedDates, setSelectedDates] = useState([]);
   const [availableDates, setAvailableDates] = useState([]);
-  // const [unavailableDates, setUnavailableDates] = useState([]); 
   const [guests, setGuests] = useState(0);
   const [bookingStatus, setBookingStatus] = useState(null);
 
@@ -37,58 +36,62 @@ const VenueDetails = () => {
     });
   };
 
-  // const isDateUnavailable = (date) => {
-  //   return unavailableDates.some((unavailableDate) => {
-  //     return new Date(unavailableDate).toDateString() === date.toDateString();
-  //   });
-  // };
-
   const handleGuestsChange = (event) => {
     const numGuests = parseInt(event.target.value);
     if (numGuests <= venue.maxGuests) {
       setGuests(numGuests);
     } else {
-      // If number of guests exceeds max, set guests to maxGuests
       setGuests(venue.maxGuests);
     }
   };
 
-const handleSubmit = (event) => {
-  event.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
-  const apiKey = import.meta.env.VITE_API_KEY;
-  const accessToken = localStorage.getItem('accessToken');
+    const apiKey = import.meta.env.VITE_API_KEY;
+    const accessToken = localStorage.getItem('accessToken');
 
-  const firstDate = selectedDates[0]; // First date in the selected range
-  const lastDate = selectedDates[selectedDates.length - 1]; // Last date in the selected range
+    const firstDate = selectedDates[0];
+    const lastDate = selectedDates[selectedDates.length - 1];
 
-  const bookingData = {
-    dateFrom: firstDate.toISOString(), // Set dateFrom to the first date
-    dateTo: lastDate.toISOString(), // Set dateTo to the last date
-    guests: guests,
-    venueId: id
+    const bookingData = {
+      dateFrom: firstDate.toISOString(),
+      dateTo: lastDate.toISOString(),
+      guests: guests,
+      venueId: id
+    };
+
+    fetch("https://v2.api.noroff.dev/holidaze/bookings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        'x-noroff-api-key': apiKey,
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(bookingData)
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else if (response.status === 401 || response.status === 403) {
+        throw new Error('Unauthorized');
+      } else {
+        throw new Error('Booking failed');
+      }
+    })
+    .then(data => {
+      console.log("Booking created successfully:", data);
+      setBookingStatus("success");
+    })
+    .catch(error => {
+      console.error("Error creating booking:", error);
+      if (error.message === 'Unauthorized') {
+        setBookingStatus("unauthorized");
+      } else {
+        setBookingStatus("error");
+      }
+    });
   };
-
-  fetch("https://v2.api.noroff.dev/holidaze/bookings", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      'x-noroff-api-key': apiKey,
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify(bookingData)
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log("Booking created successfully:", data);
-    // Handle successful booking
-    setBookingStatus("success");
-  })
-  .catch(error => {
-    console.error("Error creating booking:", error);
-    setBookingStatus("error");
-  });
-};
 
   if (!venue) {
     return <div>Loading...</div>;
@@ -175,36 +178,36 @@ const handleSubmit = (event) => {
           onChange={handleDateChange} 
           className="mx-auto rounded-lg shadow-md text-black w-full sm:w-96"
           tileClassName={({date}) => isDateAvailable(date) ? "bg-green-200 text-black" : "bg-red-200 text-black"}
+        />
+      </div>
+      {/* Booking form */}
+      <form onSubmit={handleSubmit} className="mt-6">
+        <div className="mb-4">
+          <label htmlFor="guests" className="block text-sm font-medium text-gray-700">
+            Number of Guests (Max: {venue.maxGuests}):
+          </label>
+          <input 
+            type="number" 
+            id="guests" 
+            name="guests" 
+            value={guests} 
+            onChange={handleGuestsChange} 
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
           />
-          </div>
-          {/* Booking form */}
-          <form onSubmit={handleSubmit} className="mt-6">
-            <div className="mb-4">
-              <label htmlFor="guests" className="block text-sm font-medium text-gray-700">
-                Number of Guests (Max: {venue.maxGuests}):
-              </label>
-              <input 
-                type="number" 
-                id="guests" 
-                name="guests" 
-                value={guests} 
-                onChange={handleGuestsChange} 
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
-              />
-            </div>
-            <button 
-              type="submit" 
-              className="inline-flex items-center bg-blue text-white py-2 rounded-md hover:bg-darkblue"
-            >
-              Book Now
-            </button>
-          </form>
-          {/* Booking status */}
-          {bookingStatus === "success" && <p className="text-green-500 mt-4">Booking successful!</p>}
-          {bookingStatus === "error" && <p className="text-red-500 mt-4">Error creating booking. Please try again later.</p>}
         </div>
-      );
-    }
-    
-    export default VenueDetails;
-    
+        <button 
+          type="submit" 
+          className="inline-flex items-center bg-blue text-white py-2 rounded-md hover:bg-darkblue"
+        >
+          Book Now
+        </button>
+      </form>
+      {/* Booking status */}
+      {bookingStatus === "success" && <p className="text-green-500 mt-4">Booking successful!</p>}
+      {bookingStatus === "error" && <p className="text-red-500 mt-4">Error creating booking. Please try again later.</p>}
+      {bookingStatus === "unauthorized" && <p className="text-red-500 mt-4">You are not authorized to make a booking. Please log in and try again.</p>}
+    </div>
+  );
+}
+
+export default VenueDetails;
