@@ -29,7 +29,6 @@ function ContactForm() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(formData);
     try {
       await schema.validate(formData);
       setUseSubmit(true);

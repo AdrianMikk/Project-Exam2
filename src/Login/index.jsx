@@ -32,13 +32,10 @@ const Login = () => {
       });
 
       const data = await response.json();
-      console.log('Data:', data);
 
       if (response.ok) {
-        // setIsRegistered(true);
         localStorage.setItem('accessToken', data.data.accessToken);
         localStorage.setItem('user', JSON.stringify(data));
-        console.log('Is Registered:', data.data.isRegistered); 
         // Check if user is registered
         navigate('/venues');
         setError('You need to be registered.');
@@ -100,7 +97,7 @@ const Login = () => {
           </button>
           <p className="text-center mt-4">
             Dont have an account?{' '}
-            <a href="/register" className="text-blue-400 hover:underline">
+            <a href="/register" className="text-green hover:underline">
               Register
             </a>
           </p>

@@ -99,10 +99,10 @@ const VenueDetails = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <h1 className="text-3xl font-bold mb-6 text-center">{venue.title}</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center pt-4">{venue.name}</h1>
       <div className="max-w-3xl">
         {venue.media.map((image, index) => (
-          <img key={index} src={image.url} alt={`${venue.title}-image-${index}`} className="w-full h-auto mb-4 rounded-lg shadow-md" />
+          <img key={index} src={image.url} alt={`${venue.name}-image-${index}`} className="w-full h-auto mb-4 rounded-lg shadow-md" />
         ))}
         <p className="text-lg text-gray-800 mb-4">{venue.description}</p>
         <div className="flex items-center">

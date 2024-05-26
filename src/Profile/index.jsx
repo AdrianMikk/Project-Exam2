@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import CreateVenue from "../CreateBooking/index";
 import { useParams } from "react-router-dom";
+import CreateVenue from "../CreateBooking/index";
 import UpcomingBookings from "../UpcomingBookings/index";
 import UpdateVenue from "../UpdateVenue";
+import MyVenueBookings from "../viewMyVenueBookings";
 
 const Profile = () => {
   const { name } = useParams();
-  const [avatarUrl, setAvatarUrl] = useState(localStorage.getItem("avatarUrl") || "");
-  const [bannerUrl, setBannerUrl] = useState(localStorage.getItem("bannerUrl") || "");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [bannerUrl, setBannerUrl] = useState("");
   const [imageUrlInput, setImageUrlInput] = useState("");
   const [bannerUrlInput, setBannerUrlInput] = useState("");
   const [showCreateBooking, setShowCreateBooking] = useState(false);
@@ -19,8 +20,65 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [showEditVenue, setShowEditVenue] = useState(false);
+  const [isVenueManager, setIsVenueManager] = useState(localStorage.getItem("isVenueManager") === "true");
 
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    setIsAuthenticated(!!accessToken);
+    
+    const apiKey = import.meta.env.VITE_API_KEY;
+    setApiKey(apiKey);
+  
+    if (!accessToken) return;
+  
+    const fetchUserData = async () => {
+      const user = localStorage.getItem('user');
+      if (!user) {
+        console.error("No user data found in localStorage.");
+        return;
+      }
+  
+      const userObject = JSON.parse(user);
+      const userName = userObject?.data?.name;
+  
+      try {
+        const response = await fetch(`https://v2.api.noroff.dev/holidaze/profiles/${userName}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Noroff-api-key': apiKey,
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        const data = await response.json();
+  
+        if (data) {
+          if (data.data.venueManager) {
+            setIsVenueManager(true);
+            localStorage.setItem("isVenueManager", "true");
+          } else {
+            setIsVenueManager(false);
+            localStorage.setItem("isVenueManager", "false");
+          }
+          // Set avatar and banner URLs
+          setAvatarUrl(data.data.avatar?.url || "");
+          setBannerUrl(data.data.banner?.url || "");
+        }
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+    };
+  
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("isVenueManager", isVenueManager);
+  }, [isVenueManager]);
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -34,7 +92,6 @@ const Profile = () => {
       const user = localStorage.getItem('user');
       const userObject = JSON.parse(user);
       const userName = userObject.data.name;
-      console.log("User:", userName);
 
       try {
         const response = await fetch(`https://v2.api.noroff.dev/holidaze/profiles/${userName}?_venues=true&_bookings=true`, {
@@ -45,17 +102,11 @@ const Profile = () => {
           },
         });
         const data = await response.json();
-        console.log("Profile data fetched:", data);
         if (data) {
-          setAvatarUrl(data.avatar?.url || "");
+          setAvatarUrl(data.data.avatar?.url || "");
+          setBannerUrl(data.data.banner?.url || "");
           setVenues(data.data.venues || []);
           setBookings(data.data.bookings || []);
-          if (data.avatar?.url) {
-            localStorage.setItem("avatarUrl", data.avatar.url);
-          }
-          if (data.banner?.url) {
-            localStorage.setItem("bannerUrl", data.banner.url);
-          }
         }
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -64,17 +115,6 @@ const Profile = () => {
 
     fetchProfileData();
   }, [apiKey, name]);
-  console.log("Venues:", venues);
-  console.log("Bookings:", bookings);
-
-  // Synchronize avatarUrl and bannerUrl with localStorage
-  useEffect(() => {
-    localStorage.setItem("avatarUrl", avatarUrl);
-  }, [avatarUrl]);
-
-  useEffect(() => {
-    localStorage.setItem("bannerUrl", bannerUrl);
-  }, [bannerUrl]);
 
   // Handling changes and submissions for avatar and banner URLs
   const handleAvatarChange = (event) => {
@@ -104,11 +144,12 @@ const Profile = () => {
   // Function to update profile
   const updateProfile = (updatedData) => {
     const accessToken = localStorage.getItem('accessToken');
+    const userName = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).data.name : null;
     if (!accessToken) {
       console.error("User is not authenticated");
       return;
     }
-    fetch(`https://v2.api.noroff.dev/holidaze/profiles/${name}`, {
+    fetch(`https://v2.api.noroff.dev/holidaze/profiles/${userName}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -119,12 +160,11 @@ const Profile = () => {
     })
     .then(response => response.json())
     .then(data => {
-      console.log("Profile updated successfully:", data);
-      if (data.avatar) {
-        localStorage.setItem("avatarUrl", data.avatar.url);
+      if (data.data.avatar) {
+        setAvatarUrl(data.data.avatar.url);
       }
-      if (data.banner) {
-        localStorage.setItem("bannerUrl", data.banner.url);
+      if (data.data.banner) {
+        setBannerUrl(data.data.banner.url);
       }
       setSuccessMessage("Profile updated successfully.");
       setErrorMessage("");
@@ -141,19 +181,13 @@ const Profile = () => {
     setShowCreateBooking(!showCreateBooking);
   };
 
-  // const toggleEditVenue = () => {
-  //   setShowEditVenue (!showEditVenue);
-  // };
-
-  const toggleEditVenue = (venueId, venue) => {
+  const toggleEditVenue = (venueId) => {
     setEditingVenueId(venueId === editingVenueId ? null : venueId);
   };
 
   // Function to handle logout
   const handleLogout = () => {
-    localStorage.removeItem("avatarUrl");
-    localStorage.removeItem("bannerUrl");
-    localStorage.removeItem('accessToken');
+    localStorage.clear();
     window.location.href = "/login";
   };
 
@@ -180,7 +214,6 @@ const Profile = () => {
           </div>
         </div>
         <div className="px-5 py-4 flex flex-col items-center">
-          <h1 className="text-xl font-bold text-white mt-12 mb-2">{name}</h1>
           <button
             onClick={toggleEdit}
             className="bg-blue-500 text-white mt-2 px-4 py-2 rounded-md hover:bg-blue-600"
@@ -190,9 +223,7 @@ const Profile = () => {
           {isEditing && (
             <>
               <div className="mt-4">
-                <h2 className="text-lg font-semibold mb-2 text-white">
-                  Change Avatar (Image Address)
-                </h2>
+                <label htmlFor="avatar" className="text-lg font-semibold mb-2 text-white">Enter Avatar Image Address</label>
                 <input
                   type="text"
                   className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
@@ -208,9 +239,7 @@ const Profile = () => {
                 </button>
               </div>
               <div className="mt-4">
-                <h2 className="text-lg font-semibold mb-2 text-white">
-                  Change Banner (Image Address)
-                </h2>
+                <label htmlFor="change-avatar" className="text-lg font-semibold mb-2 text-white">Enter Banner Image Address</label>
                 <input
                   type="text"
                   className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:shadow-outline"
@@ -241,7 +270,7 @@ const Profile = () => {
             <>
               <button
                 onClick={handleLogout}
-                className="bg-red text-white mt-6 px-4 py-2 rounded-md hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105"
+                className="bg-red text-black mt-6 px-4 py-2 rounded-md hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105"
               >
                 Logout
               </button>
@@ -254,43 +283,43 @@ const Profile = () => {
           {UpcomingBookings(bookings)}
           <div className="mt-8">
             <h2 className="text-xl font-semibold mb-4 text-white">My Venues</h2>
-              <div className="grid grid-cols-1 gap-4">
-                {venues && venues.length > 0 ? (
-                  venues.map(venue => (
-                    <div key={venue.id}>
-                      <div className="flex items-center bg-gray-800 rounded-lg p-4">
-                        <img
-                          src={venue.media[0].url}
-                          alt={venue.name}
-                          className="w-16 h-16 object-cover rounded-lg mr-4"
-                        />
-                        <div>
-                          <a href={`/venues/${venue.id}`} className="text-lg font-semibold text-blue-400 hover:underline">
-                            {venue.name}
-                          </a>
-                          <p className="text-gray-300">{venue.location.city}, {venue.location.country}</p>
-                        </div>
-                        <button onClick={() => toggleEditVenue(venue.id)} className="bg-blue-500 text-white mt-6 px-4 py-2 rounded-md hover:bg-blue-600">
-                          Edit Venue
-                        </button>
+            <div className="grid grid-cols-1 gap-4">
+              {venues && venues.length > 0 ? (
+                venues.map(venue => (
+                  <div key={venue.id}>
+                    <div className="flex items-center bg-gray-800 rounded-lg p-4">
+                      <img
+                        src={venue.media[0].url}
+                        alt={venue.name}
+                        className="w-16 h-16 object-cover rounded-lg mr-4"
+                      />
+                      <div>
+                        <a href={`/venues/${venue.id}`} className="text-lg font-semibold text-white hover:bg-blue-600">
+                          {venue.name}
+                        </a>
+                        <p className="text-gray-300 pr-2">{venue.location.city}, {venue.location.country}</p>
                       </div>
-                        <div className="mt-8 flex justify-center cols-span-2">
-                        {editingVenueId === venue.id && <UpdateVenue venueDetails={venue} />}
-                        </div>
+                      <button onClick={() => toggleEditVenue(venue.id)} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                        Edit Venue
+                      </button>
                     </div>
-                  ))
-                ) : (
-                  <p className="text-gray-400 mt-2">No venues listed.</p>
-                )}
-              </div>
+                    <div className="mt-8 flex justify-center cols-span-2">
+                      {editingVenueId === venue.id && <UpdateVenue venueDetails={venue} />}
+                    </div>
+                    <div className="mt-4">
+                      <MyVenueBookings id={venue.id} />
+                  </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-400 mt-2">No venues listed.</p>
+              )}
+            </div>
           </div>
-
-
-
         </div>
       </div>
     </div>
   );
-}  
+}
 
 export default Profile;

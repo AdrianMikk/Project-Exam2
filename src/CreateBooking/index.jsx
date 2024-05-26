@@ -35,12 +35,6 @@ const CreateVenue = () => {
     const apiKey = import.meta.env.VITE_API_KEY;
     const accessToken = localStorage.getItem('accessToken'); 
 
-    console.log('apiKey:', apiKey);
-    console.log('accessToken:', accessToken);
-
-    console.log('venuePrice:', venuePrice);
-    console.log('bookingDetails:', bookingDetails);
-
     const bookingData = {
       guests: parseInt(bookingDetails.maxGuests), 
       price: parseInt(venuePrice),
@@ -53,8 +47,6 @@ const CreateVenue = () => {
       location: bookingDetails.location
     };
 
-    console.log('bookingData:', bookingData);
-
     fetch('https://v2.api.noroff.dev/holidaze/venues', {
       method: 'POST',
       headers: {
@@ -65,7 +57,6 @@ const CreateVenue = () => {
       body: JSON.stringify(bookingData),
     })
       .then((response) => {
-        console.log('Response status:', response.status);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }

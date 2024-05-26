@@ -6,7 +6,6 @@ function Venues() {
   const [venues, setVenues] = useState([]);
   const [filteredVenues, setFilteredVenues] = useState([]);
   const [error, setError] = useState(null);
-  // Remove showCreateBooking state
 
   useEffect(() => {
     fetchVenues();
@@ -60,10 +59,10 @@ function Venues() {
   return (
     <div className="container mx-auto px-4">
       <h3 className="text-4xl font-bold mb-8 text-center">Our Venues</h3>
-      {/* Remove Create Booking button and form */}
-      {/* Search bar */}
+      <label htmlFor="search" className="sr-only">Search venues</label>
       <input
         type="text"
+        id="search"
         placeholder="Search venues..."
         value={searchTerm}
         onChange={handleChange}
@@ -81,18 +80,17 @@ function Venues() {
               {venue.media && venue.media[0] && (
                 <img
                   src={venue.media[0].url}
-                  alt={venue.title}
+                  alt={venue.name || 'Venue image'}
                   className="w-full h-48 object-cover"
                 />
               )}
               <div>
-              <h4 className="text-2xl font-semibold mb-2 text-white">
-  {venue.title && venue.title.length > 30 ? venue.title.substring(0, 40) + "..." : venue.title}
-</h4>
-<p className="text-white">
-  {venue.description && venue.description.length > 40 ? venue.description.substring(0, 40) + "..." : venue.description}
-</p>
-
+                <h4 className="text-2xl font-semibold mb-2 text-white">
+                  {venue.name && venue.name.length > 30 ? venue.name.substring(0, 40) + "..." : venue.name}
+                </h4>
+                <p className="text-white">
+                  {venue.description && venue.description.length > 40 ? venue.description.substring(0, 40) + "..." : venue.description}
+                </p>
                 <div className="flex justify-between items-center mt-4">
                   <p className="text-xl font-semibold text-white">
                     Price: £{venue.price}
@@ -103,16 +101,8 @@ function Venues() {
                         key={i}
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
-                        fill={
-                          i < venue.rating
-                            ? "#FFD700"
-                            : "none"
-                        }
-                        className={`w-6 h-6 ${
-                          i < venue.rating
-                            ? "text-yellow-500"
-                            : "text-gray-300"
-                        }`}
+                        fill={i < venue.rating ? "#FFD700" : "none"}
+                        className={`w-6 h-6 ${i < venue.rating ? "text-yellow-500" : "text-gray-300"}`}
                       >
                         <path
                           fillRule="evenodd"

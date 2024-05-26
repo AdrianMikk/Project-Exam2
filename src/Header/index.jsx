@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
 
   return (
     <header className="bg-blue-500 shadow-lg">
@@ -15,7 +20,8 @@ const Navbar = () => {
         <div className="md:hidden">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="text-white focus:outline-none"
+            className="text-white focus:outline-none" 
+            aria-label='hamburger menu button' 
           >
             <svg
               className={`w-6 h-6 transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}
@@ -53,25 +59,22 @@ const Navbar = () => {
             >
               Contact
             </Link>
-            <Link
-              to="/login" 
-              className="block mt-4 md:inline-block text-white hover:text-gray-100 transition duration-300"
-            >
-              Login
-            </Link>
-            {/* <Link
-              to="/register" 
-              className="block mt-4 md:inline-block text-white hover:text-gray-100 transition duration-300"
-            >
-              Register
-            </Link> */}
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className="block mt-4 md:inline-block text-white hover:text-gray-100 transition duration-300"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                to="/login" 
+                className="block mt-4 md:inline-block text-white hover:text-gray-100 transition duration-300"
+              >
+                Login
+              </Link>
+            )}
           </div>
-          {/* <button
-            className="mt-4 md:mt-0 md:ml-4 text-white bg-red-900 rounded-md px-4 py-2 hover:bg-red-800 transition duration-300"
-            onClick={handleLogout}
-          >
-            Logout
-          </button> */}
         </nav>
       </div>
     </header>
